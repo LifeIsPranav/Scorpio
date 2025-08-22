@@ -1,5 +1,10 @@
-import { useState } from "react";
+import CategoryFormDialog from "@/components/admin/CategoryFormDialog";
+import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { adminCategoriesApi } from "@/lib/api";
+
 import {
   Card,
   CardContent,
@@ -7,8 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -44,15 +47,49 @@ import {
   Eye,
   FolderOpen,
 } from "lucide-react";
-import { categories, products } from "@/lib/data";
-import CategoryFormDialog from "@/components/admin/CategoryFormDialog";
+
+interface Category {
+  _id: string;
+  name: string;
+  slug: string;
+  description: string;
+  image: string;
+  productCount: number;
+  isActive: boolean;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export default function AdminCategories() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showCategoryForm, setShowCategoryForm] = useState(false);
-  const [editingCategory, setEditingCategory] = useState(null);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [categoryToDelete, setCategoryToDelete] = useState(null);
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch categories on component mount
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      setLoading(true);
+      const response = await adminCategoriesApi.getAll() as any;
+      if (response.success) {
+        setCategories(response.data || []);
+      }
+    } catch (err) {
+      setError('Failed to fetch categories');
+      console.error('Error fetching categories:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredCategories = categories.filter((category) => {
     return (
@@ -61,31 +98,69 @@ export default function AdminCategories() {
     );
   });
 
-  const getProductCount = (categoryId) => {
-    return products.filter((product) => product.category === categoryId).length;
-  };
-
   const handleAddCategory = () => {
     setEditingCategory(null);
     setShowCategoryForm(true);
   };
 
-  const handleEditCategory = (category) => {
+  const handleEditCategory = (category: Category) => {
     setEditingCategory(category);
     setShowCategoryForm(true);
   };
 
-  const handleDeleteCategory = (category) => {
+  const handleDeleteCategory = (category: Category) => {
     setCategoryToDelete(category);
     setDeleteDialogOpen(true);
   };
 
-  const confirmDelete = () => {
-    // In a real app, this would call an API to delete the category
-    console.log("Deleting category:", categoryToDelete);
-    setDeleteDialogOpen(false);
-    setCategoryToDelete(null);
+  const confirmDelete = async () => {
+    if (!categoryToDelete) return;
+    
+    try {
+      const response = await adminCategoriesApi.delete(categoryToDelete._id) as any;
+      if (response.success) {
+        setCategories(categories.filter(cat => cat._id !== categoryToDelete._id));
+        setDeleteDialogOpen(false);
+        setCategoryToDelete(null);
+      }
+    } catch (err) {
+      console.error('Error deleting category:', err);
+      setError('Failed to delete category');
+    }
   };
+
+  const handleCategoryFormSubmit = async (categoryData: any) => {
+    try {
+      if (editingCategory) {
+        // Update existing category
+        const response = await adminCategoriesApi.update(editingCategory._id, categoryData) as any;
+        if (response.success) {
+          setCategories(categories.map(cat => 
+            cat._id === editingCategory._id ? response.data : cat
+          ));
+        }
+      } else {
+        // Create new category
+        const response = await adminCategoriesApi.create(categoryData) as any;
+        if (response.success) {
+          setCategories([...categories, response.data]);
+        }
+      }
+      setShowCategoryForm(false);
+      setEditingCategory(null);
+    } catch (err) {
+      console.error('Error saving category:', err);
+      setError('Failed to save category');
+    }
+  };
+
+  if (loading) {
+    return <div className="p-6 text-center">Loading categories...</div>;
+  }
+
+  if (error) {
+    return <div className="p-6 text-center text-red-600">{error}</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -130,7 +205,7 @@ export default function AdminCategories() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredCategories.map((category) => (
           <Card
-            key={category.id}
+            key={category._id}
             className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
           >
             <CardHeader className="pb-4">
@@ -158,7 +233,7 @@ export default function AdminCategories() {
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                     <DropdownMenuItem
-                      onClick={() => console.log("View category:", category.id)}
+                      onClick={() => console.log("View category:", category._id)}
                     >
                       <Eye className="mr-2 h-4 w-4" />
                       View
@@ -188,7 +263,7 @@ export default function AdminCategories() {
                   className="flex items-center space-x-1"
                 >
                   <FolderOpen className="w-3 h-3" />
-                  <span>{getProductCount(category.id)} products</span>
+                  <span>{category.productCount} products</span>
                 </Badge>
                 <Badge
                   variant="outline"
@@ -244,7 +319,7 @@ export default function AdminCategories() {
               </TableHeader>
               <TableBody>
                 {filteredCategories.map((category) => (
-                  <TableRow key={category.id}>
+                  <TableRow key={category._id}>
                     <TableCell>
                       <img
                         src={category.image}
@@ -262,7 +337,7 @@ export default function AdminCategories() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="secondary">
-                        {getProductCount(category.id)} products
+                        {category.productCount} products
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -285,7 +360,7 @@ export default function AdminCategories() {
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuItem
                             onClick={() =>
-                              console.log("View category:", category.id)
+                              console.log("View category:", category._id)
                             }
                           >
                             <Eye className="mr-2 h-4 w-4" />
@@ -321,10 +396,7 @@ export default function AdminCategories() {
         open={showCategoryForm}
         onOpenChange={setShowCategoryForm}
         category={editingCategory}
-        onSubmit={(categoryData) => {
-          console.log("Category data:", categoryData);
-          setShowCategoryForm(false);
-        }}
+        onSubmit={handleCategoryFormSubmit}
       />
 
       {/* Delete Confirmation Dialog */}

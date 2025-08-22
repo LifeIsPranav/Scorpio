@@ -1,3 +1,5 @@
+import { adminApi } from "@/lib/api";
+
 import {
   createContext,
   useContext,
@@ -21,23 +23,34 @@ interface AdminAuthProviderProps {
   children: ReactNode;
 }
 
-// Demo credentials - in production, this should be handled by your backend
-const DEMO_ADMIN_CREDENTIALS = {
-  username: "admin",
-  password: "admin123",
-};
-
 export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in (from localStorage)
-    const adminToken = localStorage.getItem("adminToken");
-    if (adminToken === "admin-authenticated") {
-      setIsAuthenticated(true);
-    }
-    setIsLoading(false);
+    // Check if user is already logged in and verify token
+    const verifyAuth = async () => {
+      const adminToken = localStorage.getItem("adminToken");
+      if (adminToken) {
+        try {
+          const response = await adminApi.verifyToken() as any;
+          if (response.success) {
+            setIsAuthenticated(true);
+          } else {
+            // Token is invalid, remove it
+            localStorage.removeItem("adminToken");
+            setIsAuthenticated(false);
+          }
+        } catch (error) {
+          // Token verification failed, remove it
+          localStorage.removeItem("adminToken");
+          setIsAuthenticated(false);
+        }
+      }
+      setIsLoading(false);
+    };
+
+    verifyAuth();
   }, []);
 
   const login = async (
@@ -46,27 +59,28 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
   ): Promise<boolean> => {
     setIsLoading(true);
 
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // Demo authentication - in production, this should be a real API call
-    if (
-      username === DEMO_ADMIN_CREDENTIALS.username &&
-      password === DEMO_ADMIN_CREDENTIALS.password
-    ) {
-      setIsAuthenticated(true);
-      localStorage.setItem("adminToken", "admin-authenticated");
+    try {
+      const response = await adminApi.login(username, password) as any;
+      
+      if (response.success && response.token) {
+        localStorage.setItem("adminToken", response.token);
+        setIsAuthenticated(true);
+        setIsLoading(false);
+        return true;
+      } else {
+        setIsLoading(false);
+        return false;
+      }
+    } catch (error) {
+      console.error('Login error:', error);
       setIsLoading(false);
-      return true;
+      return false;
     }
-
-    setIsLoading(false);
-    return false;
   };
 
   const logout = () => {
-    setIsAuthenticated(false);
     localStorage.removeItem("adminToken");
+    setIsAuthenticated(false);
   };
 
   return (

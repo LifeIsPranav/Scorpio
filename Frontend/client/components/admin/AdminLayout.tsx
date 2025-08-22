@@ -1,9 +1,11 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useAdminAuth } from "@/contexts/AdminAuthContext";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,8 +27,8 @@ import {
   LogOut,
   Store,
   Bell,
+  MessageSquare,
 } from "lucide-react";
-import { useAdminAuth } from "@/contexts/AdminAuthContext";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -55,12 +57,12 @@ const navigationItems = [
     name: "Orders",
     href: "/admin/orders",
     icon: ShoppingCart,
-    badge: "5",
+    badge: null,
   },
   {
-    name: "Customers",
-    href: "/admin/customers",
-    icon: Users,
+    name: "Reviews",
+    href: "/admin/reviews",
+    icon: MessageSquare,
     badge: null,
   },
   {

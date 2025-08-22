@@ -1,5 +1,10 @@
-import { useState } from "react";
+import ProductFormDialog from "@/components/admin/ProductFormDialog";
+import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { adminCategoriesApi, adminProductsApi } from "@/lib/api";
+
 import {
   Card,
   CardContent,
@@ -7,8 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -45,16 +48,70 @@ import {
   Star,
   Crown,
 } from "lucide-react";
-import { products, categories } from "@/lib/data";
-import ProductFormDialog from "@/components/admin/ProductFormDialog";
+
+interface Product {
+  _id: string;
+  name: string;
+  slug: string;
+  description: string;
+  price: string;
+  priceNumeric: number;
+  images: string[];
+  category: string;
+  featured: boolean;
+  premium?: boolean;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Category {
+  _id: string;
+  name: string;
+  slug: string;
+}
 
 export default function AdminProducts() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [showProductForm, setShowProductForm] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [productToDelete, setProductToDelete] = useState(null);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch products and categories on component mount
+  useEffect(() => {
+    Promise.all([fetchProducts(), fetchCategories()]);
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await adminProductsApi.getAll() as any;
+      if (response.success) {
+        setProducts(response.data || []);
+      }
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      setError('Failed to fetch products');
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await adminCategoriesApi.getAll() as any;
+      if (response.success) {
+        setCategories(response.data || []);
+      }
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch =
@@ -70,38 +127,86 @@ export default function AdminProducts() {
     setShowProductForm(true);
   };
 
-  const handleEditProduct = (product) => {
+  const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
     setShowProductForm(true);
   };
 
-  const handleDeleteProduct = (product) => {
+  const handleDeleteProduct = (product: Product) => {
     setProductToDelete(product);
     setDeleteDialogOpen(true);
   };
 
-  const confirmDelete = () => {
-    // In a real app, this would call an API to delete the product
-    console.log("Deleting product:", productToDelete);
-    setDeleteDialogOpen(false);
-    setProductToDelete(null);
+  const confirmDelete = async () => {
+    if (!productToDelete) return;
+    
+    try {
+      const response = await adminProductsApi.delete(productToDelete._id) as any;
+      if (response.success) {
+        setProducts(products.filter(prod => prod._id !== productToDelete._id));
+        setDeleteDialogOpen(false);
+        setProductToDelete(null);
+      }
+    } catch (err) {
+      console.error('Error deleting product:', err);
+      setError('Failed to delete product');
+    }
   };
 
-  const handleTogglePremium = (product) => {
-    // In a real app, this would call an API to toggle premium status
-    console.log(
-      "Toggling premium status for product:",
-      product.id,
-      !product.premium,
-    );
-    // For demo purposes, we'll just log the action
-    // In a real implementation, you would update the product in your database
+  const handleTogglePremium = async (product: Product) => {
+    try {
+      const response = await adminProductsApi.update(product._id, {
+        ...product,
+        premium: !product.premium
+      }) as any;
+      if (response.success) {
+        setProducts(products.map(prod => 
+          prod._id === product._id ? response.data : prod
+        ));
+      }
+    } catch (err) {
+      console.error('Error updating product:', err);
+      setError('Failed to update product');
+    }
   };
 
-  const getCategoryName = (categoryId) => {
-    const category = categories.find((cat) => cat.id === categoryId);
-    return category?.name || categoryId;
+  const getCategoryName = (categorySlug: string) => {
+    const category = categories.find((cat) => cat.slug === categorySlug);
+    return category?.name || categorySlug;
   };
+
+  const handleProductFormSubmit = async (productData: any) => {
+    try {
+      if (editingProduct) {
+        // Update existing product
+        const response = await adminProductsApi.update(editingProduct._id, productData) as any;
+        if (response.success) {
+          setProducts(products.map(prod => 
+            prod._id === editingProduct._id ? response.data : prod
+          ));
+        }
+      } else {
+        // Create new product
+        const response = await adminProductsApi.create(productData) as any;
+        if (response.success) {
+          setProducts([...products, response.data]);
+        }
+      }
+      setShowProductForm(false);
+      setEditingProduct(null);
+    } catch (err) {
+      console.error('Error saving product:', err);
+      setError('Failed to save product');
+    }
+  };
+
+  if (loading) {
+    return <div className="p-6 text-center">Loading products...</div>;
+  }
+
+  if (error) {
+    return <div className="p-6 text-center text-red-600">{error}</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -149,7 +254,7 @@ export default function AdminProducts() {
             >
               <option value="all">All Categories</option>
               {categories.map((category) => (
-                <option key={category.id} value={category.id}>
+                <option key={category._id} value={category.slug}>
                   {category.name}
                 </option>
               ))}
@@ -181,7 +286,7 @@ export default function AdminProducts() {
               </TableHeader>
               <TableBody>
                 {filteredProducts.map((product) => (
-                  <TableRow key={product.id}>
+                  <TableRow key={product._id}>
                     <TableCell>
                       <img
                         src={product.images[0]}
@@ -239,7 +344,7 @@ export default function AdminProducts() {
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuItem
                             onClick={() =>
-                              console.log("View product:", product.id)
+                              console.log("View product:", product._id)
                             }
                           >
                             <Eye className="mr-2 h-4 w-4" />
@@ -292,10 +397,8 @@ export default function AdminProducts() {
         open={showProductForm}
         onOpenChange={setShowProductForm}
         product={editingProduct}
-        onSubmit={(productData) => {
-          console.log("Product data:", productData);
-          setShowProductForm(false);
-        }}
+        categories={categories}
+        onSubmit={handleProductFormSubmit}
       />
 
       {/* Delete Confirmation Dialog */}

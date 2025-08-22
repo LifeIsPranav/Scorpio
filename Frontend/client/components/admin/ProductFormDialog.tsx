@@ -1,9 +1,12 @@
-import { useState, useEffect } from "react";
+import { ImageIcon, Plus, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import {
   Dialog,
   DialogContent,
@@ -19,14 +22,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { X, Plus, ImageIcon } from "lucide-react";
-import { categories } from "@/lib/data";
+
+interface Category {
+  _id: string;
+  name: string;
+  slug: string;
+  description?: string;
+}
 
 interface ProductFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   product?: any;
+  categories: Category[];
   onSubmit: (data: any) => void;
 }
 
@@ -34,6 +42,7 @@ export default function ProductFormDialog({
   open,
   onOpenChange,
   product,
+  categories,
   onSubmit,
 }: ProductFormDialogProps) {
   const [formData, setFormData] = useState({
@@ -47,7 +56,7 @@ export default function ProductFormDialog({
     whatsappMessage: "",
   });
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
 
   useEffect(() => {
     if (product) {
@@ -104,7 +113,7 @@ export default function ProductFormDialog({
   };
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors: {[key: string]: string} = {};
 
     if (!formData.name.trim()) {
       newErrors.name = "Product name is required";
@@ -222,7 +231,7 @@ export default function ProductFormDialog({
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
+                    <SelectItem key={category._id} value={category._id}>
                       {category.name}
                     </SelectItem>
                   ))}
@@ -265,7 +274,7 @@ export default function ProductFormDialog({
                         alt="Preview"
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          e.target.style.display = "none";
+                          (e.target as HTMLImageElement).style.display = "none";
                         }}
                       />
                     </div>

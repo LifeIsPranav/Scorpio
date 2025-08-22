@@ -1,15 +1,56 @@
-import { Button } from "@/components/ui/button";
-import { categories } from "@/lib/data";
-import { ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import ScrollReveal from "@/components/ScrollReveal";
+import { ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { publicApi } from "@/lib/api";
+
+interface Category {
+  _id: string;
+  name: string;
+  slug: string;
+  description: string;
+  image: string;
+  productCount: number;
+  isActive: boolean;
+  order: number;
+}
 
 export default function CategoriesSection() {
   const navigate = useNavigate();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const navigateToCategory = (categoryId: string) => {
-    navigate(`/category/${categoryId}`);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await publicApi.getCategories() as any;
+        if (response.success) {
+          setCategories(response.data || []);
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const navigateToCategory = (categorySlug: string) => {
+    navigate(`/category/${categorySlug}`);
   };
+
+  if (loading) {
+    return (
+      <section id="categories" className="py-24 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">Loading categories...</div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="categories" className="py-24 bg-background">
@@ -29,10 +70,10 @@ export default function CategoriesSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {categories.map((category, index) => (
             <div
-              key={category.id}
+              key={category._id}
               className="group relative overflow-hidden rounded-2xl bg-card border border-border hover:shadow-xl transition-all duration-500 hover:-translate-y-2 animate-fade-in cursor-pointer"
               style={{ animationDelay: `${index * 0.1}s` }}
-              onClick={() => navigateToCategory(category.id)}
+              onClick={() => navigateToCategory(category.slug)}
             >
               {/* Category Image */}
               <div className="relative aspect-[4/3] overflow-hidden">
@@ -61,7 +102,7 @@ export default function CategoriesSection() {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      navigateToCategory(category.id);
+                      navigateToCategory(category.slug);
                     }}
                   >
                     Explore

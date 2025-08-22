@@ -1,13 +1,35 @@
+import { Heart, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Heart } from "lucide-react";
-import { Product, openWhatsApp } from "@/lib/data";
+import { Button } from "@/components/ui/button";
+
+interface Product {
+  _id: string;
+  name: string;
+  slug: string;
+  description: string;
+  price: string;
+  priceNumeric: number;
+  images: string[];
+  category: string;
+  featured: boolean;
+  premium?: boolean;
+  tags: string[];
+}
 
 interface ProductCardProps {
   product: Product;
 }
+
+const openWhatsApp = (product: Product) => {
+  const phoneNumber = "+1234567890"; // Replace with your actual WhatsApp number
+  const message = encodeURIComponent(
+    `Hi! I'm interested in ${product.name}. Could you tell me more about it?`
+  );
+  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+  window.open(whatsappUrl, "_blank");
+};
 
 export default function ProductCard({ product }: ProductCardProps) {
   const [currentImage, setCurrentImage] = useState(0);
@@ -20,9 +42,9 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="group relative bg-card rounded-2xl border border-border overflow-hidden hover:shadow-xl transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl hover:border-primary/20 magnetic-hover">
+    <div className="group relative bg-card rounded-2xl border border-border overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 hover:border-primary/20 magnetic-hover">
       {/* Image Container */}
-      <Link to={`/product/${product.id}`} className="block">
+      <Link to={`/product/${product.slug}`} className="block">
         <div className="relative aspect-square overflow-hidden bg-muted cursor-pointer">
           {/* Current Image */}
           <img
@@ -98,7 +120,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       {/* Content */}
       <div className="p-6">
-        <Link to={`/product/${product.id}`}>
+        <Link to={`/product/${product.slug}`}>
           <h3 className="font-semibold text-lg mb-2 line-clamp-1 group-hover:text-primary transition-colors cursor-pointer">
             {product.name}
           </h3>

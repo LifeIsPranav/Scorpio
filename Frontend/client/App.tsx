@@ -1,33 +1,34 @@
 import "./global.css";
-
-import { Toaster } from "@/components/ui/toaster";
-import { createRoot } from "react-dom/client";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import Products from "./pages/Products";
+import About from "./pages/About";
+import AdminCategories from "./pages/admin/AdminCategories";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminLayout from "./components/admin/AdminLayout";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminOrders from "./pages/admin/AdminOrders";
+import AdminProducts from "./pages/admin/AdminProducts";
+import AdminReviews from "./pages/admin/AdminReviews";
+import Careers from "./pages/Careers";
 import Categories from "./pages/Categories";
 import CategoryProducts from "./pages/CategoryProducts";
-import About from "./pages/About";
 import Contact from "./pages/Contact";
-import ProductDetail from "./pages/ProductDetail";
-import Careers from "./pages/Careers";
-import ShippingInfo from "./pages/ShippingInfo";
-import Returns from "./pages/Returns";
-import SizeGuide from "./pages/SizeGuide";
 import HelpCenter from "./pages/HelpCenter";
+import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import ProductDetail from "./pages/ProductDetail";
+import Products from "./pages/Products";
+import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
+import Returns from "./pages/Returns";
+import ShippingInfo from "./pages/ShippingInfo";
+import SizeGuide from "./pages/SizeGuide";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { AdminAuthProvider } from "./contexts/AdminAuthContext";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 // Admin imports
-import { AdminAuthProvider } from "./contexts/AdminAuthContext";
-import AdminLogin from "./pages/admin/AdminLogin";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminProducts from "./pages/admin/AdminProducts";
-import AdminCategories from "./pages/admin/AdminCategories";
-import AdminLayout from "./components/admin/AdminLayout";
-import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
 
 const queryClient = new QueryClient();
 
@@ -92,31 +93,17 @@ const App = () => (
               element={
                 <ProtectedAdminRoute>
                   <AdminLayout>
-                    <div className="p-8 text-center">
-                      <h2 className="text-2xl font-bold mb-4">
-                        Orders Management
-                      </h2>
-                      <p className="text-muted-foreground">
-                        Orders management feature coming soon...
-                      </p>
-                    </div>
+                    <AdminOrders />
                   </AdminLayout>
                 </ProtectedAdminRoute>
               }
             />
             <Route
-              path="/admin/customers"
+              path="/admin/reviews"
               element={
                 <ProtectedAdminRoute>
                   <AdminLayout>
-                    <div className="p-8 text-center">
-                      <h2 className="text-2xl font-bold mb-4">
-                        Customer Management
-                      </h2>
-                      <p className="text-muted-foreground">
-                        Customer management feature coming soon...
-                      </p>
-                    </div>
+                    <AdminReviews />
                   </AdminLayout>
                 </ProtectedAdminRoute>
               }

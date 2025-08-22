@@ -1,43 +1,99 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight, Star, ArrowRight } from "lucide-react";
-import { premiumProducts, Product, openWhatsApp } from "@/lib/data";
 import ScrollReveal from "@/components/ScrollReveal";
+import { ArrowRight, ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { publicApi } from "@/lib/api";
+
+interface Product {
+  _id: string;
+  name: string;
+  slug: string;
+  description: string;
+  price: string;
+  priceNumeric: number;
+  images: string[];
+  category: string;
+  featured: boolean;
+  premium?: boolean;
+  tags: string[];
+}
+
+const openWhatsApp = (product: Product) => {
+  const phoneNumber = "+1234567890"; // Replace with your actual WhatsApp number
+  const message = encodeURIComponent(
+    `Hi! I'm interested in ${product.name}. Could you tell me more about it?`
+  );
+  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+  window.open(whatsappUrl, "_blank");
+};
 
 export default function PremiumShowcase() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [premiumProducts, setPremiumProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPremiumProducts = async () => {
+      try {
+        const response = await publicApi.getProducts() as any;
+        if (response.success && response.data) {
+          setPremiumProducts(response.data.filter((p: Product) => p.premium));
+        }
+      } catch (error) {
+        console.error('Failed to fetch premium products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPremiumProducts();
+  }, []);
 
   // Auto-play functionality
   useEffect(() => {
-    if (!isAutoPlaying) return;
+    if (!isAutoPlaying || premiumProducts.length === 0) return;
 
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % premiumProducts.length);
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [isAutoPlaying]);
+  }, [isAutoPlaying, premiumProducts.length]);
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % premiumProducts.length);
+    if (premiumProducts.length > 0) {
+      setCurrentSlide((prev) => (prev + 1) % premiumProducts.length);
+    }
   };
 
   const prevSlide = () => {
-    setCurrentSlide(
-      (prev) => (prev - 1 + premiumProducts.length) % premiumProducts.length,
-    );
+    if (premiumProducts.length > 0) {
+      setCurrentSlide(
+        (prev) => (prev - 1 + premiumProducts.length) % premiumProducts.length,
+      );
+    }
   };
 
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-  };
+  if (loading) {
+    return (
+      <section className="py-24 bg-gradient-to-br from-background via-muted/30 to-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">Loading premium products...</div>
+        </div>
+      </section>
+    );
+  }
 
   if (premiumProducts.length === 0) {
     return null;
   }
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+  };
 
   const currentProduct = premiumProducts[currentSlide];
 
@@ -132,7 +188,7 @@ export default function PremiumShowcase() {
 
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Link to={`/product/${currentProduct.id}`} className="flex-1">
+                  <Link to={`/product/${currentProduct.slug}`} className="flex-1">
                     <Button size="lg" className="w-full rounded-full group">
                       View Details
                       <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -198,7 +254,7 @@ export default function PremiumShowcase() {
           <div className="flex flex-wrap justify-center gap-4">
             {premiumProducts.map((product, index) => (
               <Button
-                key={product.id}
+                key={product._id}
                 variant={index === currentSlide ? "default" : "outline"}
                 size="sm"
                 onClick={() => goToSlide(index)}

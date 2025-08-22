@@ -1,12 +1,61 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import ProductCard from "./ProductCard";
-import { products, categories } from "@/lib/data";
 import { Filter } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { publicApi } from "@/lib/api";
+
+interface Product {
+  _id: string;
+  name: string;
+  slug: string;
+  description: string;
+  price: string;
+  priceNumeric: number;
+  images: string[];
+  category: string;
+  featured: boolean;
+  premium?: boolean;
+  tags: string[];
+}
+
+interface Category {
+  _id: string;
+  name: string;
+  slug: string;
+  description: string;
+  image: string;
+}
 
 export default function ProductShowcase() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [productsResponse, categoriesResponse] = await Promise.all([
+          publicApi.getProducts() as any,
+          publicApi.getCategories() as any
+        ]);
+
+        if (productsResponse.success) {
+          setProducts(productsResponse.data || []);
+        }
+        if (categoriesResponse.success) {
+          setCategories(categoriesResponse.data || []);
+        }
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const filteredProducts =
     selectedCategory === "all"
@@ -15,8 +64,18 @@ export default function ProductShowcase() {
 
   const categoryButtons = [
     { id: "all", name: "All Products" },
-    ...categories.map((cat) => ({ id: cat.id, name: cat.name })),
+    ...categories.map((cat) => ({ id: cat.slug, name: cat.name })),
   ];
+
+  if (loading) {
+    return (
+      <section id="products" className="py-24 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">Loading products...</div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="products" className="py-24 bg-muted/30">
@@ -70,11 +129,10 @@ export default function ProductShowcase() {
 
         {/* Product Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredProducts.map((product, index) => (
+                    {filteredProducts.map((product) => (
             <div
-              key={product.id}
+              key={product._id}
               className="animate-fade-in"
-              style={{ animationDelay: `${index * 0.1}s` }}
             >
               <ProductCard product={product} />
             </div>
