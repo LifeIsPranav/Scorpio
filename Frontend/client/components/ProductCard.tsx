@@ -1,0 +1,132 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { MessageCircle, Heart } from "lucide-react";
+import { Product, openWhatsApp } from "@/lib/data";
+
+interface ProductCardProps {
+  product: Product;
+}
+
+export default function ProductCard({ product }: ProductCardProps) {
+  const [currentImage, setCurrentImage] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  const handleWhatsAppClick = () => {
+    openWhatsApp(product);
+  };
+
+  return (
+    <div className="group relative bg-card rounded-2xl border border-border overflow-hidden hover:shadow-xl transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl hover:border-primary/20 magnetic-hover">
+      {/* Image Container */}
+      <Link to={`/product/${product.id}`} className="block">
+        <div className="relative aspect-square overflow-hidden bg-muted cursor-pointer">
+          {/* Current Image */}
+          <img
+            src={product.images[currentImage]}
+            alt={product.name}
+            className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${
+              imageLoaded && !isTransitioning ? "opacity-100" : "opacity-0"
+            }`}
+            onLoad={() => {
+              setImageLoaded(true);
+              setIsTransitioning(false);
+            }}
+          />
+
+          {/* Loading placeholder */}
+          {(!imageLoaded || isTransitioning) && (
+            <div className="absolute inset-0 bg-muted animate-pulse"></div>
+          )}
+
+          {/* Image navigation dots */}
+          {product.images.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+              {product.images.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (index !== currentImage) {
+                      setIsTransitioning(true);
+                      setImageLoaded(false);
+                      setTimeout(() => {
+                        setCurrentImage(index);
+                      }, 100);
+                    }
+                  }}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    index === currentImage
+                      ? "bg-white scale-125"
+                      : "bg-white/50 hover:bg-white/75"
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Actions overlay */}
+          <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button
+              size="icon"
+              variant="secondary"
+              className="rounded-full w-10 h-10 bg-white/90 hover:bg-white"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsLiked(!isLiked);
+              }}
+            >
+              <Heart
+                className={`w-4 h-4 ${isLiked ? "fill-red-500 text-red-500" : ""}`}
+              />
+            </Button>
+          </div>
+
+          {/* Featured badge */}
+          {product.featured && (
+            <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
+              Featured
+            </Badge>
+          )}
+        </div>
+      </Link>
+
+      {/* Content */}
+      <div className="p-6">
+        <Link to={`/product/${product.id}`}>
+          <h3 className="font-semibold text-lg mb-2 line-clamp-1 group-hover:text-primary transition-colors cursor-pointer">
+            {product.name}
+          </h3>
+        </Link>
+
+        <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+          {product.description}
+        </p>
+
+        <div className="flex items-center justify-between">
+          <span className="text-2xl font-bold text-primary">
+            {product.price}
+          </span>
+
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleWhatsAppClick();
+            }}
+            size="icon"
+            className="bg-foreground hover:bg-foreground/90 text-background rounded-full w-12 h-12 group/btn shadow-lg hover:shadow-xl transition-all duration-300"
+            style={{ animation: "breathe 3s ease-in-out infinite" }}
+          >
+            <MessageCircle className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
