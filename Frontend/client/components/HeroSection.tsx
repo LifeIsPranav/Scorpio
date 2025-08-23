@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function HeroSection() {
   const scrollToProducts = () => {
@@ -34,14 +34,14 @@ export default function HeroSection() {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8">
             <Sparkles className="w-4 h-4" />
-            Premium Product Showcase
+            Premium Quality Showcase
           </div>
 
           {/* Main heading */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
-            <span className="gradient-text">Discover</span>
-            <br />
-            <span className="text-foreground/90">Excellence</span>
+            <span className="gradient-text">Discover </span>
+            {/* <br /> */}
+            <span className="text-foreground/90"> Excellence</span>
           </h1>
 
           {/* Subtitle */}

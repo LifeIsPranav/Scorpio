@@ -1,3 +1,4 @@
+import OrderFormDialog from "@/components/admin/OrderFormDialog";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -415,6 +416,21 @@ export default function AdminOrders() {
           )}
         </CardContent>
       </Card>
+
+      {/* Order Form Dialog */}
+      <OrderFormDialog
+        open={showOrderForm}
+        onClose={() => {
+          setShowOrderForm(false);
+          setEditingOrder(null);
+        }}
+        onSave={() => {
+          fetchOrders();
+          setShowOrderForm(false);
+          setEditingOrder(null);
+        }}
+        editingOrder={editingOrder}
+      />
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

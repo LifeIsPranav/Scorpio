@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { adminCategoriesApi, adminOrdersApi, adminProductsApi, adminReviewsApi } from "@/lib/api";
@@ -36,6 +37,7 @@ interface DashboardStats {
 }
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats>({
     totalProducts: 0,
     totalCategories: 0,
@@ -62,14 +64,6 @@ export default function AdminDashboard() {
         adminReviewsApi.getAll(),
       ]);
 
-      // Debug: Log API responses to understand structure
-      console.log('Dashboard API Responses:', {
-        productsRes,
-        categoriesRes,
-        ordersRes,
-        reviewsRes
-      });
-
       // Extract data from API responses (they come wrapped in { success: true, data: [...] })
       const products = Array.isArray((productsRes as any)?.data) ? (productsRes as any).data : 
                       Array.isArray(productsRes) ? productsRes : [];
@@ -79,8 +73,6 @@ export default function AdminDashboard() {
                     Array.isArray(ordersRes) ? ordersRes : [];
       const reviews = Array.isArray((reviewsRes as any)?.data) ? (reviewsRes as any).data : 
                      Array.isArray(reviewsRes) ? reviewsRes : [];
-
-      console.log('Extracted data:', { products, categories, orders, reviews });
 
       // Calculate revenue from orders
       const totalRevenue = orders.reduce((sum: number, order: any) => {
@@ -108,6 +100,23 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchDashboardData();
   }, []);
+
+  // Navigation handlers for quick actions
+  const handleAddProduct = () => {
+    navigate('/admin/products');
+  };
+
+  const handleManageCategories = () => {
+    navigate('/admin/categories');
+  };
+
+  const handleViewOrders = () => {
+    navigate('/admin/orders');
+  };
+
+  const handleManageReviews = () => {
+    navigate('/admin/reviews');
+  };
 
   const statsCards = [
     {
@@ -339,7 +348,7 @@ export default function AdminDashboard() {
 
       {/* Quick Actions */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={handleAddProduct}>
           <CardContent className="flex items-center justify-center p-6">
             <div className="text-center">
               <Package className="h-8 w-8 mx-auto mb-2 text-primary" />
@@ -351,7 +360,7 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={handleManageCategories}>
           <CardContent className="flex items-center justify-center p-6">
             <div className="text-center">
               <FolderOpen className="h-8 w-8 mx-auto mb-2 text-primary" />
@@ -363,7 +372,7 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={handleViewOrders}>
           <CardContent className="flex items-center justify-center p-6">
             <div className="text-center">
               <ShoppingCart className="h-8 w-8 mx-auto mb-2 text-primary" />
@@ -375,7 +384,7 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={handleManageReviews}>
           <CardContent className="flex items-center justify-center p-6">
             <div className="text-center">
               <Star className="h-8 w-8 mx-auto mb-2 text-primary" />

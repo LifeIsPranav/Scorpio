@@ -1,3 +1,4 @@
+import ReviewFormDialog from "@/components/admin/ReviewFormDialog";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -411,6 +412,15 @@ export default function AdminReviews() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem 
+                            onClick={() => {
+                              setEditingReview(review);
+                              setShowReviewForm(true);
+                            }}
+                          >
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit Review
+                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setEditingReview(review)}>
                             <Eye className="mr-2 h-4 w-4" />
                             View Details
@@ -466,6 +476,21 @@ export default function AdminReviews() {
           )}
         </CardContent>
       </Card>
+
+      {/* Review Form Dialog */}
+      <ReviewFormDialog
+        open={showReviewForm}
+        onClose={() => {
+          setShowReviewForm(false);
+          setEditingReview(null);
+        }}
+        onSave={() => {
+          fetchReviews();
+          setShowReviewForm(false);
+          setEditingReview(null);
+        }}
+        editingReview={editingReview}
+      />
 
       {/* Admin Reply Dialog */}
       <Dialog open={showReplyDialog} onOpenChange={setShowReplyDialog}>
