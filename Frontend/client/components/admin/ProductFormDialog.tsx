@@ -60,14 +60,23 @@ export default function ProductFormDialog({
 
   useEffect(() => {
     if (product) {
+      // When editing, find category ID from slug
+      const categoryFromSlug = categories.find(cat => cat.slug === product.category);
+      const categoryId = categoryFromSlug ? categoryFromSlug._id : product.category;
+      
+      // Extract numeric price from formatted price
+      const numericPrice = product.priceNumeric ? 
+        product.priceNumeric.toString() : 
+        product.price?.replace(/[^\d]/g, '') || "";
+
       setFormData({
         name: product.name || "",
         description: product.description || "",
-        price: product.price || "",
-        category: product.category || "",
+        price: numericPrice,
+        category: categoryId,
         featured: product.featured || false,
         premium: product.premium || false,
-        images: product.images || [""],
+        images: product.images && product.images.length > 0 ? product.images : [""],
         whatsappMessage: product.whatsappMessage || "",
       });
     } else {
@@ -83,7 +92,7 @@ export default function ProductFormDialog({
       });
     }
     setErrors({});
-  }, [product, open]);
+  }, [product, open, categories]);
 
   const handleInputChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -131,13 +140,24 @@ export default function ProductFormDialog({
       newErrors.category = "Category is required";
     }
 
-    const validImages = formData.images.filter((img) => img.trim());
+    const validImages = formData.images.filter((img) => img.trim() && img.startsWith('http'));
     if (validImages.length === 0) {
-      newErrors.images = "At least one image is required";
+      newErrors.images = "At least one valid image URL is required";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  // Function to generate slug from product name
+  const generateSlug = (name: string) => {
+    return name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single
+      .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -147,10 +167,68 @@ export default function ProductFormDialog({
       return;
     }
 
+    // Transform data to match backend schema
+    const priceNumeric = parseFloat(formData.price.replace(/[^\d.]/g, '')) || 0;
+    const formattedPrice = `₹${priceNumeric.toLocaleString('en-IN')}`;
+    
+    // Find category slug by ID
+    const selectedCategory = categories.find(cat => cat._id === formData.category);
+    const categorySlug = selectedCategory ? selectedCategory.slug : formData.category;
+
+    // Generate slug for the product
+    const productSlug = product ? product.slug : generateSlug(formData.name);
+
+    // Validate images - check for valid URLs and add image extension if missing
+    const validateAndFixImageUrl = (url: string): string => {
+      if (!url.startsWith('http')) return '';
+      
+      // If it's an Unsplash URL without extension, add .jpg at the end
+      if (url.includes('images.unsplash.com') && !url.match(/\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i)) {
+        // Check if it already has query parameters
+        if (url.includes('?')) {
+          return url + '&fm=jpg';
+        } else {
+          return url + '?fm=jpg';
+        }
+      }
+      
+      // For other URLs, if they don't have an extension, try to add one
+      if (!url.match(/\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i)) {
+        // If it has query parameters, add extension before them
+        if (url.includes('?')) {
+          const [baseUrl, queryString] = url.split('?');
+          return `${baseUrl}.jpg?${queryString}`;
+        } else {
+          return `${url}.jpg`;
+        }
+      }
+      
+      return url;
+    };
+
+    const validatedImages = formData.images
+      .map(img => validateAndFixImageUrl(img.trim()))
+      .filter(img => img);
+
+    if (validatedImages.length === 0) {
+      alert('Please provide at least one valid image URL');
+      return;
+    }
+
+    console.log('Validated images:', validatedImages); // Debug log
+
     const submitData = {
-      ...formData,
-      images: formData.images.filter((img) => img.trim()),
-      id: product?.id || `product-${Date.now()}`,
+      name: formData.name.trim(),
+      slug: productSlug,
+      description: formData.description.trim(),
+      price: formattedPrice,
+      priceNumeric: priceNumeric,
+      category: categorySlug,
+      featured: formData.featured,
+      premium: formData.premium,
+      images: validatedImages,
+      whatsappMessage: formData.whatsappMessage?.trim() || '',
+      tags: []
     };
 
     onSubmit(submitData);

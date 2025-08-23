@@ -42,7 +42,12 @@ const productSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator: function(v) {
-        return /^https?:\/\/.+\.(jpg|jpeg|png|webp|gif)$/i.test(v);
+        // More flexible URL validation for modern image services
+        return /^https?:\/\/.+/i.test(v) && 
+               (v.includes('images.unsplash.com') || 
+                v.includes('cdn.') || 
+                /\.(jpg|jpeg|png|webp|gif)$/i.test(v) ||
+                /\.(jpg|jpeg|png|webp|gif)\?/i.test(v));
       },
       message: 'Please provide a valid image URL'
     }

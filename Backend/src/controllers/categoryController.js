@@ -72,7 +72,7 @@ const getCategory = asyncHandler(async (req, res) => {
 // @route   POST /api/admin/categories
 // @access  Private
 const createCategory = asyncHandler(async (req, res) => {
-  const { name, description, image, order = 0 } = req.body;
+  const { name, slug, description, image, order = 0 } = req.body;
 
   // Check if category with same name already exists
   const existingCategory = await Category.findOne({
@@ -89,6 +89,7 @@ const createCategory = asyncHandler(async (req, res) => {
   // Create category
   const category = await Category.create({
     name,
+    slug,
     description,
     image,
     order

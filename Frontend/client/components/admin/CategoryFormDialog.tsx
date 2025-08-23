@@ -32,7 +32,18 @@ export default function CategoryFormDialog({
     image: "",
   });
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
+
+  // Function to generate slug from category name
+  const generateSlug = (name: string) => {
+    return name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single
+      .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+  };
 
   useEffect(() => {
     if (category) {
@@ -59,7 +70,7 @@ export default function CategoryFormDialog({
   };
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors: {[key: string]: string} = {};
 
     if (!formData.name.trim()) {
       newErrors.name = "Category name is required";
@@ -69,8 +80,8 @@ export default function CategoryFormDialog({
       newErrors.description = "Description is required";
     }
 
-    if (!formData.image.trim()) {
-      newErrors.image = "Category image is required";
+    if (!formData.image.trim() || !formData.image.startsWith('http')) {
+      newErrors.image = "Valid category image URL is required";
     }
 
     setErrors(newErrors);
@@ -84,9 +95,16 @@ export default function CategoryFormDialog({
       return;
     }
 
+    // Generate slug for the category
+    const categorySlug = category ? category.slug : generateSlug(formData.name);
+
     const submitData = {
-      ...formData,
-      id: category?.id || `category-${Date.now()}`,
+      name: formData.name.trim(),
+      slug: categorySlug,
+      description: formData.description.trim(),
+      image: formData.image.trim(),
+      isActive: true,
+      order: 0
     };
 
     onSubmit(submitData);
@@ -162,7 +180,7 @@ export default function CategoryFormDialog({
                     alt="Category preview"
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      e.target.style.display = "none";
+                      (e.target as HTMLImageElement).style.display = "none";
                     }}
                   />
                 </div>

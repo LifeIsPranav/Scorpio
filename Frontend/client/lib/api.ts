@@ -244,12 +244,12 @@ export const publicApi = {
     if (params?.featured) searchParams.append('featured', 'true');
     
     const query = searchParams.toString();
-    return apiRequest(`/public/products${query ? `?${query}` : ''}`);
+    return apiRequest(`/products${query ? `?${query}` : ''}`);
   },
-  getCategories: () => apiRequest('/public/categories'),
-  getProduct: (slug: string) => apiRequest(`/public/products/${slug}`),
-  getCategory: (slug: string) => apiRequest(`/public/categories/${slug}`),
-  getCategoryProducts: (categorySlug: string) => apiRequest(`/public/categories/${categorySlug}/products`),
+  getCategories: () => apiRequest('/categories'),
+  getProduct: (slug: string) => apiRequest(`/products/${slug}`),
+  getCategory: (slug: string) => apiRequest(`/categories/${slug}`),
+  getCategoryProducts: (categorySlug: string) => apiRequest(`/categories/${categorySlug}/products`),
 };
 
 export { API_BASE_URL };

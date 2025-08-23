@@ -125,6 +125,8 @@ const createProduct = asyncHandler(async (req, res) => {
     name,
     description,
     price,
+    priceNumeric,
+    slug,
     images,
     category,
     featured = false,
@@ -146,8 +148,10 @@ const createProduct = asyncHandler(async (req, res) => {
   // Create product
   const product = await Product.create({
     name,
+    slug,
     description,
     price,
+    priceNumeric,
     images,
     category,
     featured,
