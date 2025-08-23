@@ -33,7 +33,7 @@ router.get('/products/premium', getPremiumProducts);
 router.get('/products', validatePagination, getPublicProducts);
 
 // @route   GET /api/products/:id
-router.get('/products/:id', validateObjectId(), getPublicProduct);
+router.get('/products/:id', getPublicProduct);
 
 // Category endpoints
 // @route   GET /api/categories

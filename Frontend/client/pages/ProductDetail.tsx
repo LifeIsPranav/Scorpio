@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import Navigation from "@/components/Navigation";
 import ProductCard from "@/components/ProductCard";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import {
   ChevronLeft,
   ChevronRight,
@@ -18,39 +19,138 @@ import {
   Shield,
   Award,
 } from "lucide-react";
-import { products, openWhatsApp, Product, categories } from "@/lib/data";
+
+// API product interface (different from static data)
+interface ApiProduct {
+  _id: string;
+  name: string;
+  slug: string;
+  description: string;
+  price: string;
+  priceNumeric: number;
+  images: string[];
+  category: string;
+  featured: boolean;
+  premium?: boolean;
+  whatsappMessage?: string;
+  tags: string[];
+  views: number;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ApiCategory {
+  _id: string;
+  name: string;
+  slug: string;
+  description: string;
+  image: string;
+  productCount: number;
+  isActive: boolean;
+  order: number;
+}
 
 export default function ProductDetail() {
-  const { id } = useParams<{ id: string }>();
-  const [product, setProduct] = useState<Product | null>(null);
+  const { id } = useParams<{ id: string }>(); // This is actually the slug from URL
+  const [product, setProduct] = useState<ApiProduct | null>(null);
+  const [categories, setCategories] = useState<ApiCategory[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
-  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [relatedProducts, setRelatedProducts] = useState<ApiProduct[]>([]);
   const [isImageTransitioning, setIsImageTransitioning] = useState(false);
   const [mainImageLoaded, setMainImageLoaded] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // API base URL
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050/api';
 
   useEffect(() => {
     if (id) {
-      const foundProduct = products.find((p) => p.id === id);
-      setProduct(foundProduct || null);
-      setCurrentImageIndex(0);
-      setMainImageLoaded(false);
-      setIsImageTransitioning(false);
-
-      if (foundProduct) {
-        // Get related products from same category
-        const related = products
-          .filter(
-            (p) =>
-              p.category === foundProduct.category && p.id !== foundProduct.id,
-          )
-          .slice(0, 4);
-        setRelatedProducts(related);
-      }
+      fetchProductBySlug(id);
+      fetchCategories();
     }
   }, [id]);
 
-  if (!product) {
+  const fetchProductBySlug = async (slug: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Fetch product by slug using the single product endpoint
+      const response = await fetch(`${API_BASE_URL}/products/${slug}`);
+      if (!response.ok) {
+        if (response.status === 404) {
+          setError('Product not found');
+        } else {
+          throw new Error('Failed to fetch product');
+        }
+        return;
+      }
+      
+      const result = await response.json();
+      if (!result.success || !result.data || !result.data.product) {
+        setError('Product not found');
+        return;
+      }
+      
+      const foundProduct = result.data.product;
+      const relatedProducts = result.data.relatedProducts || [];
+      
+      setProduct(foundProduct);
+      setRelatedProducts(relatedProducts);
+      setCurrentImageIndex(0);
+      setMainImageLoaded(false);
+      setIsImageTransitioning(false);
+      
+    } catch (err) {
+      console.error('Error fetching product:', err);
+      setError('Failed to load product');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/categories`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch categories');
+      }
+      
+      const data = await response.json();
+      const categoriesData = data.success ? data.data : [];
+      setCategories(categoriesData);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+    }
+  };
+
+  // WhatsApp function
+  const openWhatsApp = (product: ApiProduct) => {
+    const phoneNumber = "+1234567890"; // Replace with your actual WhatsApp number
+    const message = encodeURIComponent(
+      product.whatsappMessage ||
+        `Hi! I'm interested in ${product.name}. Could you tell me more about it?`,
+    );
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+    window.open(whatsappUrl, "_blank");
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen">
+        <Navigation />
+        <div className="pt-24 text-center">
+          <h1 className="text-2xl font-bold">Loading product...</h1>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !product) {
     return (
       <div className="min-h-screen">
         <Navigation />
@@ -69,7 +169,7 @@ export default function ProductDetail() {
   }
 
   const categoryName =
-    categories.find((cat) => cat.id === product.category)?.name || "Category";
+    categories.find((cat) => cat.slug === product.category)?.name || "Category";
 
   const nextImage = () => {
     setIsImageTransitioning(true);
@@ -524,7 +624,7 @@ export default function ProductDetail() {
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">SKU</span>
                         <span className="font-medium">
-                          SP-{product.id.padStart(4, "0")}
+                          SP-{product._id.slice(-4).toUpperCase()}
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -650,7 +750,7 @@ export default function ProductDetail() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedProducts.map((relatedProduct, index) => (
                 <div
-                  key={relatedProduct.id}
+                  key={relatedProduct._id}
                   className="animate-fade-in"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >

@@ -139,10 +139,21 @@ const getPublicProducts = asyncHandler(async (req, res) => {
 // @route   GET /api/products/:id
 // @access  Public
 const getPublicProduct = asyncHandler(async (req, res) => {
-  const product = await Product.findOne({
-    _id: req.params.id,
-    isActive: true
-  }).select('-__v');
+  const { id } = req.params;
+  
+  // Try to find by _id first, if it fails (invalid ObjectId), try by slug
+  let query;
+  
+  // Check if the id is a valid MongoDB ObjectId
+  if (id.match(/^[0-9a-fA-F]{24}$/)) {
+    // It's a valid ObjectId, search by _id
+    query = { _id: id, isActive: true };
+  } else {
+    // It's not a valid ObjectId, search by slug
+    query = { slug: id, isActive: true };
+  }
+
+  const product = await Product.findOne(query).select('-__v');
 
   if (!product) {
     return res.status(404).json({
