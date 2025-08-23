@@ -1,3 +1,8 @@
+import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { adminCategoriesApi, adminOrdersApi, adminProductsApi, adminReviewsApi } from "@/lib/api";
+
 import {
   Card,
   CardContent,
@@ -5,8 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Package,
   FolderOpen,
@@ -20,8 +23,6 @@ import {
   DollarSign,
   RefreshCw,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { adminProductsApi, adminCategoriesApi, adminOrdersApi, adminReviewsApi } from "@/lib/api";
 
 interface DashboardStats {
   totalProducts: number;

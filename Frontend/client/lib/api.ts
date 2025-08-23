@@ -76,7 +76,8 @@ export const adminApi = {
 export const adminCategoriesApi = {
   getAll: (params?: any) => {
     const searchParams = new URLSearchParams(params);
-    return authenticatedRequest(`/admin/categories?${searchParams}`);
+    const queryString = searchParams.toString();
+    return authenticatedRequest(`/admin/categories${queryString ? `?${queryString}` : ''}`);
   },
   
   getById: (id: string) => authenticatedRequest(`/admin/categories/${id}`),
@@ -105,7 +106,8 @@ export const adminCategoriesApi = {
 export const adminProductsApi = {
   getAll: (params?: any) => {
     const searchParams = new URLSearchParams(params);
-    return authenticatedRequest(`/admin/products?${searchParams}`);
+    const queryString = searchParams.toString();
+    return authenticatedRequest(`/admin/products${queryString ? `?${queryString}` : ''}`);
   },
   
   getById: (id: string) => authenticatedRequest(`/admin/products/${id}`),
@@ -134,7 +136,8 @@ export const adminProductsApi = {
 export const adminOrdersApi = {
   getAll: (params?: any) => {
     const searchParams = new URLSearchParams(params);
-    return authenticatedRequest(`/admin/orders?${searchParams}`);
+    const queryString = searchParams.toString();
+    return authenticatedRequest(`/admin/orders${queryString ? `?${queryString}` : ''}`);
   },
   
   getById: (id: string) => authenticatedRequest(`/admin/orders/${id}`),
@@ -171,7 +174,8 @@ export const adminOrdersApi = {
 export const adminReviewsApi = {
   getAll: (params?: any) => {
     const searchParams = new URLSearchParams(params);
-    return authenticatedRequest(`/admin/reviews?${searchParams}`);
+    const queryString = searchParams.toString();
+    return authenticatedRequest(`/admin/reviews${queryString ? `?${queryString}` : ''}`);
   },
   
   getById: (id: string) => authenticatedRequest(`/admin/reviews/${id}`),
