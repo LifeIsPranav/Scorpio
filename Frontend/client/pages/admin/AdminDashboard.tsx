@@ -29,7 +29,6 @@ interface DashboardStats {
   totalCategories: number;
   totalOrders: number;
   totalRevenue: number;
-  totalCustomers: number;
   products: any[];
   categories: any[];
   orders: any[];
@@ -42,7 +41,6 @@ export default function AdminDashboard() {
     totalCategories: 0,
     totalOrders: 0,
     totalRevenue: 0,
-    totalCustomers: 0,
     products: [],
     categories: [],
     orders: [],
@@ -64,26 +62,36 @@ export default function AdminDashboard() {
         adminReviewsApi.getAll(),
       ]);
 
-      // Ensure data is arrays
-      const products = Array.isArray(productsRes) ? productsRes : [];
-      const categories = Array.isArray(categoriesRes) ? categoriesRes : [];
-      const orders = Array.isArray(ordersRes) ? ordersRes : [];
-      const reviews = Array.isArray(reviewsRes) ? reviewsRes : [];
+      // Debug: Log API responses to understand structure
+      console.log('Dashboard API Responses:', {
+        productsRes,
+        categoriesRes,
+        ordersRes,
+        reviewsRes
+      });
+
+      // Extract data from API responses (they come wrapped in { success: true, data: [...] })
+      const products = Array.isArray((productsRes as any)?.data) ? (productsRes as any).data : 
+                      Array.isArray(productsRes) ? productsRes : [];
+      const categories = Array.isArray((categoriesRes as any)?.data) ? (categoriesRes as any).data : 
+                        Array.isArray(categoriesRes) ? categoriesRes : [];
+      const orders = Array.isArray((ordersRes as any)?.data) ? (ordersRes as any).data : 
+                    Array.isArray(ordersRes) ? ordersRes : [];
+      const reviews = Array.isArray((reviewsRes as any)?.data) ? (reviewsRes as any).data : 
+                     Array.isArray(reviewsRes) ? reviewsRes : [];
+
+      console.log('Extracted data:', { products, categories, orders, reviews });
 
       // Calculate revenue from orders
       const totalRevenue = orders.reduce((sum: number, order: any) => {
         return sum + (order.totalAmount || 0);
       }, 0);
 
-      // Count unique customers from orders
-      const uniqueCustomers = new Set(orders.map((order: any) => order.customerEmail)).size;
-
       setStats({
         totalProducts: products.length,
         totalCategories: categories.length,
         totalOrders: orders.length,
         totalRevenue,
-        totalCustomers: uniqueCustomers,
         products,
         categories,
         orders,
@@ -129,13 +137,6 @@ export default function AdminDashboard() {
       description: "Total revenue",
       icon: DollarSign,
       trend: { value: "+8%", isPositive: true },
-    },
-    {
-      title: "Customers",
-      value: loading ? "..." : stats.totalCustomers.toString(),
-      description: "Unique customers",
-      icon: Users,
-      trend: { value: "+15%", isPositive: true },
     },
   ];
 
@@ -204,7 +205,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {statsCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
