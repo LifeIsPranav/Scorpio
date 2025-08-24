@@ -54,6 +54,7 @@ export default function ProductFormDialog({
     premium: false,
     images: [""],
     whatsappMessage: "",
+    keyFeatures: [] as Array<{icon: string, title: string, description: string}>,
   });
 
   const [errors, setErrors] = useState<{[key: string]: string}>({});
@@ -78,6 +79,7 @@ export default function ProductFormDialog({
         premium: product.premium || false,
         images: product.images && product.images.length > 0 ? product.images : [""],
         whatsappMessage: product.whatsappMessage || "",
+        keyFeatures: product.keyFeatures || [],
       });
     } else {
       setFormData({
@@ -89,6 +91,7 @@ export default function ProductFormDialog({
         premium: false,
         images: [""],
         whatsappMessage: "",
+        keyFeatures: [],
       });
     }
     setErrors({});
@@ -228,7 +231,8 @@ export default function ProductFormDialog({
       premium: formData.premium,
       images: validatedImages,
       whatsappMessage: formData.whatsappMessage?.trim() || '',
-      tags: []
+      tags: [],
+      keyFeatures: formData.keyFeatures
     };
 
     onSubmit(submitData);
@@ -386,6 +390,109 @@ export default function ProductFormDialog({
               placeholder="Custom message for WhatsApp inquiries..."
               rows={2}
             />
+          </div>
+
+          {/* Key Features */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label>Key Features (Optional)</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const newFeatures = [...formData.keyFeatures];
+                  newFeatures.push({ icon: "Star", title: "", description: "" });
+                  handleInputChange("keyFeatures", newFeatures);
+                }}
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add Feature
+              </Button>
+            </div>
+            
+            {formData.keyFeatures.length > 0 && (
+              <div className="space-y-3 max-h-60 overflow-y-auto border rounded-lg p-3">
+                {formData.keyFeatures.map((feature, index) => (
+                  <div key={index} className="flex gap-2 items-start p-3 border rounded-lg bg-muted/50">
+                    <div className="flex-1 space-y-2">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <Label className="text-xs">Icon</Label>
+                          <Select
+                            value={feature.icon}
+                            onValueChange={(value) => {
+                              const newFeatures = [...formData.keyFeatures];
+                              newFeatures[index] = { ...newFeatures[index], icon: value };
+                              handleInputChange("keyFeatures", newFeatures);
+                            }}
+                          >
+                            <SelectTrigger className="h-8">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Star">⭐ Star</SelectItem>
+                              <SelectItem value="Award">🏆 Award</SelectItem>
+                              <SelectItem value="Shield">🛡️ Shield</SelectItem>
+                              <SelectItem value="Package">📦 Package</SelectItem>
+                              <SelectItem value="Truck">🚛 Truck</SelectItem>
+                              <SelectItem value="Heart">❤️ Heart</SelectItem>
+                              <SelectItem value="Zap">⚡ Zap</SelectItem>
+                              <SelectItem value="Check">✅ Check</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-xs">Title</Label>
+                          <Input
+                            value={feature.title}
+                            onChange={(e) => {
+                              const newFeatures = [...formData.keyFeatures];
+                              newFeatures[index] = { ...newFeatures[index], title: e.target.value };
+                              handleInputChange("keyFeatures", newFeatures);
+                            }}
+                            placeholder="Feature title"
+                            className="h-8"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label className="text-xs">Description</Label>
+                        <Textarea
+                          value={feature.description}
+                          onChange={(e) => {
+                            const newFeatures = [...formData.keyFeatures];
+                            newFeatures[index] = { ...newFeatures[index], description: e.target.value };
+                            handleInputChange("keyFeatures", newFeatures);
+                          }}
+                          placeholder="Feature description"
+                          rows={2}
+                          className="text-sm"
+                        />
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newFeatures = formData.keyFeatures.filter((_, i) => i !== index);
+                        handleInputChange("keyFeatures", newFeatures);
+                      }}
+                      className="mt-6"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {formData.keyFeatures.length === 0 && (
+              <p className="text-sm text-muted-foreground">
+                No key features added. Click "Add Feature" to create product highlights.
+              </p>
+            )}
           </div>
 
           {/* Featured and Premium */}

@@ -79,6 +79,25 @@ const productSchema = new mongoose.Schema({
     trim: true,
     lowercase: true
   }],
+  keyFeatures: [{
+    icon: {
+      type: String,
+      trim: true,
+      default: 'Star'
+    },
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: [100, 'Feature title cannot exceed 100 characters']
+    },
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: [200, 'Feature description cannot exceed 200 characters']
+    }
+  }],
   views: {
     type: Number,
     default: 0,

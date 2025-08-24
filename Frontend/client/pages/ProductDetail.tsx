@@ -22,6 +22,8 @@ import {
   Truck,
   Shield,
   Award,
+  Zap,
+  Check,
 } from "lucide-react";
 
 // API product interface (different from static data)
@@ -38,6 +40,11 @@ interface ApiProduct {
   premium?: boolean;
   whatsappMessage?: string;
   tags: string[];
+  keyFeatures?: Array<{
+    icon: string;
+    title: string;
+    description: string;
+  }>;
   views: number;
   order: number;
   createdAt: string;
@@ -110,6 +117,21 @@ export default function ProductDetail() {
   });
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewSubmitSuccess, setReviewSubmitSuccess] = useState(false);
+
+  // Icon mapping function
+  const getIconComponent = (iconName: string) => {
+    const iconMap: { [key: string]: any } = {
+      Star,
+      Award,
+      Shield,
+      Package,
+      Truck,
+      Heart,
+      Zap,
+      Check,
+    };
+    return iconMap[iconName] || Star;
+  };
 
   // API base URL
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050/api';
@@ -491,22 +513,25 @@ export default function ProductDetail() {
                 {product.price}
               </div>
 
-              {/* Description */}
-              <div className="prose max-w-none">
-                <p className="text-muted-foreground text-lg leading-relaxed">
-                  {product.description}
-                </p>
-              </div>
+
 
               {/* Key Features */}
               <div className="space-y-2">
                 <h3 className="font-semibold">Key Features:</h3>
-                <ul className="text-muted-foreground space-y-1">
-                  <li>• Premium quality materials</li>
-                  <li>• Expert craftsmanship</li>
-                  <li>• Fast and secure delivery</li>
-                  <li>• 30-day satisfaction guarantee</li>
-                </ul>
+                {product.keyFeatures && product.keyFeatures.length > 0 ? (
+                  <ul className="text-muted-foreground space-y-1">
+                    {product.keyFeatures.map((feature, index) => (
+                      <li key={index}>• {feature.title}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <ul className="text-muted-foreground space-y-1">
+                    <li>• Premium quality materials</li>
+                    <li>• Expert craftsmanship</li>
+                    <li>• Fast and secure delivery</li>
+                    <li>• 30-day satisfaction guarantee</li>
+                  </ul>
+                )}
               </div>
 
               {/* Action Buttons */}
@@ -579,10 +604,7 @@ export default function ProductDetail() {
                     Product Description
                   </h3>
                   <p className="text-muted-foreground leading-relaxed mb-6">
-                    {product.description} This premium product represents the
-                    perfect blend of functionality, style, and quality
-                    craftsmanship. Each piece is carefully selected and curated
-                    to meet the highest standards of excellence.
+                    {product.description}
                   </p>
 
                   <h4 className="text-xl font-semibold mb-4">Key Highlights</h4>
@@ -593,8 +615,7 @@ export default function ProductDetail() {
                         <div>
                           <h5 className="font-semibold">Premium Quality</h5>
                           <p className="text-muted-foreground text-sm">
-                            Crafted with the finest materials and attention to
-                            detail
+                            Crafted with the finest materials and attention to detail
                           </p>
                         </div>
                       </div>
