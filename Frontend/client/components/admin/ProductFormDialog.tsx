@@ -294,7 +294,8 @@ export default function ProductFormDialog({
       images: validatedImages,
       whatsappMessage: formData.whatsappMessage?.trim() || '',
       tags: [],
-      keyFeatures: formData.keyFeatures
+      keyFeatures: formData.keyFeatures,
+      specifications: formData.specifications
     };
 
     onSubmit(submitData);

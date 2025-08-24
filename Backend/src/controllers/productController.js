@@ -132,6 +132,8 @@ const createProduct = asyncHandler(async (req, res) => {
     premium = false,
     whatsappMessage,
     tags = [],
+    keyFeatures = [],
+    specifications,
     order = 0
   } = req.body;
 
@@ -157,6 +159,8 @@ const createProduct = asyncHandler(async (req, res) => {
     premium,
     whatsappMessage,
     tags,
+    keyFeatures,
+    specifications,
     order
   });
 
