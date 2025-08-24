@@ -98,6 +98,58 @@ const productSchema = new mongoose.Schema({
       maxlength: [200, 'Feature description cannot exceed 200 characters']
     }
   }],
+  specifications: {
+    general: {
+      brand: {
+        type: String,
+        trim: true,
+        maxlength: [50, 'Brand name cannot exceed 50 characters'],
+        default: 'Scorpio Premium'
+      },
+      sku: {
+        type: String,
+        trim: true,
+        maxlength: [20, 'SKU cannot exceed 20 characters']
+      },
+      warranty: {
+        type: String,
+        trim: true,
+        maxlength: [50, 'Warranty cannot exceed 50 characters'],
+        default: '2 Years'
+      },
+      availability: {
+        type: String,
+        trim: true,
+        maxlength: [20, 'Availability cannot exceed 20 characters'],
+        default: 'In Stock'
+      }
+    },
+    details: {
+      weight: {
+        type: String,
+        trim: true,
+        maxlength: [20, 'Weight cannot exceed 20 characters'],
+        default: '1.2 kg'
+      },
+      dimensions: {
+        type: String,
+        trim: true,
+        maxlength: [50, 'Dimensions cannot exceed 50 characters'],
+        default: '25 × 15 × 8 cm'
+      },
+      material: {
+        type: String,
+        trim: true,
+        maxlength: [50, 'Material cannot exceed 50 characters'],
+        default: 'Premium Grade'
+      },
+      color: {
+        type: String,
+        trim: true,
+        maxlength: [30, 'Color cannot exceed 30 characters']
+      }
+    }
+  },
   views: {
     type: Number,
     default: 0,
@@ -148,6 +200,13 @@ productSchema.pre('save', function(next) {
   // Generate default WhatsApp message if not provided
   if (!this.whatsappMessage) {
     this.whatsappMessage = `Hi! I'm interested in the ${this.name}. Could you tell me more about it?`;
+  }
+
+  // Generate SKU if not provided
+  if (!this.specifications?.general?.sku) {
+    if (!this.specifications) this.specifications = {};
+    if (!this.specifications.general) this.specifications.general = {};
+    this.specifications.general.sku = `SP-${this._id.toString().slice(-4).toUpperCase()}`;
   }
 
   next();

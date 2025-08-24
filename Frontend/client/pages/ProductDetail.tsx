@@ -45,6 +45,20 @@ interface ApiProduct {
     title: string;
     description: string;
   }>;
+  specifications?: {
+    general?: {
+      brand?: string;
+      sku?: string;
+      warranty?: string;
+      availability?: string;
+    };
+    details?: {
+      weight?: string;
+      dimensions?: string;
+      material?: string;
+      color?: string;
+    };
+  };
   views: number;
   order: number;
   createdAt: string;
@@ -982,12 +996,20 @@ export default function ProductDetail() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Brand</span>
-                        <span className="font-medium">Scorpio Premium</span>
+                        <span className="font-medium">
+                          {product.specifications?.general?.brand || "Scorpio Premium"}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">SKU</span>
                         <span className="font-medium">
-                          SP-{product._id.slice(-4).toUpperCase()}
+                          {product.specifications?.general?.sku || `SP-${product._id.slice(-4).toUpperCase()}`}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Warranty</span>
+                        <span className="font-medium">
+                          {product.specifications?.general?.warranty || "2 Years"}
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -995,7 +1017,7 @@ export default function ProductDetail() {
                           Availability
                         </span>
                         <span className="font-medium text-green-600">
-                          In Stock
+                          {product.specifications?.general?.availability || "In Stock"}
                         </span>
                       </div>
                     </div>
@@ -1008,22 +1030,32 @@ export default function ProductDetail() {
                     <div className="space-y-3">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Weight</span>
-                        <span className="font-medium">1.2 kg</span>
+                        <span className="font-medium">
+                          {product.specifications?.details?.weight || "1.2 kg"}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">
                           Dimensions
                         </span>
-                        <span className="font-medium">25 × 15 × 8 cm</span>
+                        <span className="font-medium">
+                          {product.specifications?.details?.dimensions || "25 × 15 × 8 cm"}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Material</span>
-                        <span className="font-medium">Premium Grade</span>
+                        <span className="font-medium">
+                          {product.specifications?.details?.material || "Premium Grade"}
+                        </span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Warranty</span>
-                        <span className="font-medium">2 Years</span>
-                      </div>
+                      {product.specifications?.details?.color && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Color</span>
+                          <span className="font-medium">
+                            {product.specifications.details.color}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

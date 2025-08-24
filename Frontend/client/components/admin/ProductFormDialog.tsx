@@ -55,6 +55,20 @@ export default function ProductFormDialog({
     images: [""],
     whatsappMessage: "",
     keyFeatures: [] as Array<{icon: string, title: string, description: string}>,
+    specifications: {
+      general: {
+        brand: "",
+        sku: "",
+        warranty: "",
+        availability: ""
+      },
+      details: {
+        weight: "",
+        dimensions: "",
+        material: "",
+        color: ""
+      }
+    }
   });
 
   const [errors, setErrors] = useState<{[key: string]: string}>({});
@@ -80,6 +94,20 @@ export default function ProductFormDialog({
         images: product.images && product.images.length > 0 ? product.images : [""],
         whatsappMessage: product.whatsappMessage || "",
         keyFeatures: product.keyFeatures || [],
+        specifications: {
+          general: {
+            brand: product.specifications?.general?.brand || "",
+            sku: product.specifications?.general?.sku || "",
+            warranty: product.specifications?.general?.warranty || "",
+            availability: product.specifications?.general?.availability || ""
+          },
+          details: {
+            weight: product.specifications?.details?.weight || "",
+            dimensions: product.specifications?.details?.dimensions || "",
+            material: product.specifications?.details?.material || "",
+            color: product.specifications?.details?.color || ""
+          }
+        }
       });
     } else {
       setFormData({
@@ -92,13 +120,47 @@ export default function ProductFormDialog({
         images: [""],
         whatsappMessage: "",
         keyFeatures: [],
+        specifications: {
+          general: {
+            brand: "",
+            sku: "",
+            warranty: "",
+            availability: ""
+          },
+          details: {
+            weight: "",
+            dimensions: "",
+            material: "",
+            color: ""
+          }
+        }
       });
     }
     setErrors({});
   }, [product, open, categories]);
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (field.includes('.')) {
+      // Handle nested fields like "specifications.general.brand"
+      const [parent, child, grandchild] = field.split('.');
+      setFormData((prev) => {
+        if (parent === 'specifications') {
+          return {
+            ...prev,
+            specifications: {
+              ...prev.specifications,
+              [child]: {
+                ...prev.specifications[child as 'general' | 'details'],
+                [grandchild]: value
+              }
+            }
+          };
+        }
+        return prev;
+      });
+    } else {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    }
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
@@ -493,6 +555,100 @@ export default function ProductFormDialog({
                 No key features added. Click "Add Feature" to create product highlights.
               </p>
             )}
+          </div>
+
+          {/* Specifications */}
+          <div className="space-y-4">
+            <div>
+              <Label className="text-base font-medium">Product Specifications (Optional)</Label>
+              <p className="text-sm text-muted-foreground">Add detailed specifications for this product. Leave blank to use default values.</p>
+            </div>
+            
+            {/* General Specifications */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium text-blue-600">General Information</Label>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="brand" className="text-xs">Brand</Label>
+                  <Input
+                    id="brand"
+                    placeholder="e.g., Scorpio Premium"
+                    value={formData.specifications.general.brand}
+                    onChange={(e) => handleInputChange("specifications.general.brand", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="sku" className="text-xs">SKU</Label>
+                  <Input
+                    id="sku"
+                    placeholder="Auto-generated if empty"
+                    value={formData.specifications.general.sku}
+                    onChange={(e) => handleInputChange("specifications.general.sku", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="warranty" className="text-xs">Warranty</Label>
+                  <Input
+                    id="warranty"
+                    placeholder="e.g., 2 Years"
+                    value={formData.specifications.general.warranty}
+                    onChange={(e) => handleInputChange("specifications.general.warranty", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="availability" className="text-xs">Availability</Label>
+                  <Input
+                    id="availability"
+                    placeholder="e.g., In Stock"
+                    value={formData.specifications.general.availability}
+                    onChange={(e) => handleInputChange("specifications.general.availability", e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Detail Specifications */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium text-green-600">Product Details</Label>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="weight" className="text-xs">Weight</Label>
+                  <Input
+                    id="weight"
+                    placeholder="e.g., 1.2 kg"
+                    value={formData.specifications.details.weight}
+                    onChange={(e) => handleInputChange("specifications.details.weight", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="dimensions" className="text-xs">Dimensions</Label>
+                  <Input
+                    id="dimensions"
+                    placeholder="e.g., 25 × 15 × 8 cm"
+                    value={formData.specifications.details.dimensions}
+                    onChange={(e) => handleInputChange("specifications.details.dimensions", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="material" className="text-xs">Material</Label>
+                  <Input
+                    id="material"
+                    placeholder="e.g., Premium Grade"
+                    value={formData.specifications.details.material}
+                    onChange={(e) => handleInputChange("specifications.details.material", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="color" className="text-xs">Color</Label>
+                  <Input
+                    id="color"
+                    placeholder="e.g., Space Gray"
+                    value={formData.specifications.details.color}
+                    onChange={(e) => handleInputChange("specifications.details.color", e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Featured and Premium */}
