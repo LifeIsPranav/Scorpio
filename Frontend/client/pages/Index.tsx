@@ -1,9 +1,9 @@
-import Navigation from "@/components/Navigation";
-import HeroSection from "@/components/HeroSection";
-import PremiumShowcase from "@/components/PremiumShowcase";
 import CategoriesSection from "@/components/CategoriesSection";
-import ProductShowcase from "@/components/ProductShowcase";
 import Footer from "@/components/Footer";
+import HeroSection from "@/components/HeroSection";
+import Navigation from "@/components/Navigation";
+import PremiumShowcase from "@/components/PremiumShowcase";
+import ProductShowcase from "@/components/ProductShowcase";
 
 export default function Index() {
   return (
@@ -11,7 +11,7 @@ export default function Index() {
       <Navigation />
       <HeroSection />
       <PremiumShowcase />
-      <ProductShowcase />
+      <ProductShowcase isHomepage={true} />
       <CategoriesSection />
       <Footer />
     </div>

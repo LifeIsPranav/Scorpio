@@ -1,6 +1,7 @@
 import ProductCard from "./ProductCard";
 import { Filter } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { publicApi } from "@/lib/api";
 
@@ -26,12 +27,22 @@ interface Category {
   image: string;
 }
 
-export default function ProductShowcase() {
+interface ProductShowcaseProps {
+  isHomepage?: boolean;
+}
+
+export default function ProductShowcase({ isHomepage = false }: ProductShowcaseProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Different pagination logic for homepage vs products page
+  const PRODUCTS_PER_PAGE = isHomepage ? 8 : 16;
+  const MAX_HOMEPAGE_PRODUCTS = 16;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,10 +68,58 @@ export default function ProductShowcase() {
     fetchData();
   }, []);
 
-  const filteredProducts =
-    selectedCategory === "all"
-      ? products
-      : products.filter((product) => product.category === selectedCategory);
+  // Update displayed products when products or category changes
+  useEffect(() => {
+    const filteredProducts = selectedCategory === "all" 
+      ? products 
+      : products.filter(product => product.category === selectedCategory);
+
+    if (isHomepage) {
+      // Homepage: show first 8, then 16 total
+      const productsToShow = Math.min(currentPage * PRODUCTS_PER_PAGE, MAX_HOMEPAGE_PRODUCTS);
+      setDisplayedProducts(filteredProducts.slice(0, productsToShow));
+    } else {
+      // Products page: show 16 per page
+      const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+      const endIndex = startIndex + PRODUCTS_PER_PAGE;
+      setDisplayedProducts(filteredProducts.slice(0, endIndex));
+    }
+  }, [products, selectedCategory, currentPage, isHomepage]);
+
+  // Reset pagination when category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory]);
+
+  const allFilteredProducts = selectedCategory === "all" 
+    ? products 
+    : products.filter(product => product.category === selectedCategory);
+
+  const handleLoadMore = () => {
+    setCurrentPage(prev => prev + 1);
+    
+    // Scroll to new products on products page
+    if (!isHomepage) {
+      setTimeout(() => {
+        const newProductsStart = document.querySelector(`[data-product-index="${displayedProducts.length}"]`);
+        if (newProductsStart) {
+          newProductsStart.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  };
+
+  const canLoadMore = () => {
+    if (isHomepage) {
+      return displayedProducts.length < MAX_HOMEPAGE_PRODUCTS && displayedProducts.length < allFilteredProducts.length;
+    } else {
+      return displayedProducts.length < allFilteredProducts.length;
+    }
+  };
+
+  const shouldShowAllProducts = () => {
+    return isHomepage && displayedProducts.length >= MAX_HOMEPAGE_PRODUCTS && allFilteredProducts.length > MAX_HOMEPAGE_PRODUCTS;
+  };
 
   const categoryButtons = [
     { id: "all", name: "All Products" },
@@ -129,9 +188,10 @@ export default function ProductShowcase() {
 
         {/* Product Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    {filteredProducts.map((product) => (
+          {displayedProducts.map((product, index) => (
             <div
               key={product._id}
+              data-product-index={index}
               className="animate-fade-in"
             >
               <ProductCard product={product} />
@@ -140,7 +200,7 @@ export default function ProductShowcase() {
         </div>
 
         {/* No products message */}
-        {filteredProducts.length === 0 && (
+        {displayedProducts.length === 0 && !loading && (
           <div className="text-center py-12">
             <p className="text-xl text-muted-foreground">
               No products found in this category.
@@ -148,12 +208,54 @@ export default function ProductShowcase() {
           </div>
         )}
 
-        {/* Load more button (placeholder for future pagination) */}
-        {filteredProducts.length > 0 && (
-          <div className="text-center mt-16">
-            <Button variant="outline" size="lg" className="rounded-full px-8">
-              Load More Products
-            </Button>
+        {/* Loading message */}
+        {loading && (
+          <div className="text-center py-12">
+            <p className="text-xl text-muted-foreground">
+              Loading products...
+            </p>
+          </div>
+        )}
+
+        {/* Pagination buttons */}
+        {displayedProducts.length > 0 && (
+          <div className="text-center mt-16 space-y-4">
+            {/* Products count info */}
+            <div className="text-sm text-muted-foreground">
+              Showing {displayedProducts.length} of {allFilteredProducts.length} products
+              {selectedCategory !== "all" && ` in ${categoryButtons.find(c => c.id === selectedCategory)?.name}`}
+            </div>
+            
+            {/* Load More Products button */}
+            {canLoadMore() && (
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="rounded-full px-8"
+                onClick={handleLoadMore}
+              >
+                Load More Products
+                {isHomepage && ` (${Math.min(PRODUCTS_PER_PAGE, allFilteredProducts.length - displayedProducts.length)} more)`}
+              </Button>
+            )}
+            
+            {/* Show All Products button for homepage */}
+            {shouldShowAllProducts() && (
+              <div className="flex flex-col items-center space-y-4">
+                <Link to="/products">
+                  <Button 
+                    variant="default" 
+                    size="lg" 
+                    className="rounded-full px-8"
+                  >
+                    Show All Products
+                  </Button>
+                </Link>
+                <p className="text-sm text-muted-foreground">
+                  View all {allFilteredProducts.length} products in our complete catalog
+                </p>
+              </div>
+            )}
           </div>
         )}
       </div>
