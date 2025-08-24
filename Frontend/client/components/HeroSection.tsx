@@ -10,13 +10,13 @@ export default function HeroSection() {
   return (
     <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
       {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-muted/10"></div>
 
       {/* Floating elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-float"></div>
         <div
-          className="absolute top-3/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-400/15 to-purple-400/15 rounded-full blur-3xl animate-float"
+          className="absolute top-3/4 right-1/4 w-20 h-20 bg-gradient-to-r from-blue-400/15 to-purple-400/15 rounded-full blur-3xl animate-float"
           style={{ animationDelay: "2s" }}
         ></div>
         <div
@@ -98,8 +98,11 @@ export default function HeroSection() {
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 border-2 border-foreground/20 rounded-full p-1">
+      <div 
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer hover:scale-110 transition-transform"
+        onClick={scrollToProducts}
+      >
+        <div className="w-6 h-10 border-2 border-foreground/20 rounded-full p-1 hover:border-foreground/40 transition-colors">
           <div className="w-1 h-3 bg-foreground/40 rounded-full mx-auto animate-pulse"></div>
         </div>
       </div>

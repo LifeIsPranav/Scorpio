@@ -1,8 +1,12 @@
+import { Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAdminAuth } from "@/contexts/AdminAuthContext";
+
 import {
   Card,
   CardContent,
@@ -10,9 +14,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, ShieldCheck, Eye, EyeOff } from "lucide-react";
-import { useAdminAuth } from "@/contexts/AdminAuthContext";
 
 export default function AdminLogin() {
   const [username, setUsername] = useState("");

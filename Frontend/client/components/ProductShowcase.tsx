@@ -128,8 +128,10 @@ export default function ProductShowcase({ isHomepage = false }: ProductShowcaseP
 
   if (loading) {
     return (
-      <section id="products" className="py-24 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-24 bg-gradient-to-b from-muted/25 via-muted/30 to-muted/20 relative">
+        {/* Gradient overlay for smooth transition */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/10 to-background/20"></div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">Loading products...</div>
         </div>
       </section>
@@ -137,8 +139,10 @@ export default function ProductShowcase({ isHomepage = false }: ProductShowcaseP
   }
 
   return (
-    <section id="products" className="py-24 bg-muted/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="products" className="py-24 bg-gradient-to-b from-muted/25 via-muted/30 to-muted/20 relative">
+      {/* Gradient overlay for smooth transition */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/10 to-background/20"></div>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">

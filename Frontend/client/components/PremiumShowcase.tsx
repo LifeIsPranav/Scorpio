@@ -104,8 +104,10 @@ export default function PremiumShowcase() {
   const currentProduct = premiumProducts[currentSlide];
 
   return (
-    <section className="py-24 bg-gradient-to-br from-background via-muted/20 to-background overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-24 bg-gradient-to-b from-muted/5 via-muted/15 to-muted/25 overflow-hidden relative">
+      {/* Gradient overlay for smooth transition */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-transparent"></div>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <ScrollReveal className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
