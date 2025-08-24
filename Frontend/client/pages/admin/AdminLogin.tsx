@@ -64,17 +64,6 @@ export default function AdminLogin() {
           </CardHeader>
 
           <CardContent className="space-y-6">
-            {/* Demo credentials info */}
-            <Alert className="bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300">
-              <AlertDescription className="text-sm">
-                <strong>Demo Credentials:</strong>
-                <br />
-                Username: admin
-                <br />
-                Password: admin123
-              </AlertDescription>
-            </Alert>
-
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label
