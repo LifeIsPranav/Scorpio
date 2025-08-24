@@ -1,5 +1,6 @@
 const Product = require('../models/Product');
 const Category = require('../models/Category');
+const Review = require('../models/Review');
 const { asyncHandler } = require('../middleware/errorMiddleware');
 
 // @desc    Get featured products for homepage
@@ -391,6 +392,124 @@ const getHomepageData = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Get reviews for a specific product
+// @route   GET /api/products/:productId/reviews
+// @access  Public
+const getProductReviews = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+  const {
+    page = 1,
+    limit = 10,
+    sort = 'createdAt',
+    order = 'desc'
+  } = req.query;
+
+  // Try to find product by _id first, if it fails, try by slug
+  let product;
+  
+  if (productId.match(/^[0-9a-fA-F]{24}$/)) {
+    // It's a valid ObjectId, search by _id
+    product = await Product.findOne({ _id: productId, isActive: true });
+  } else {
+    // It's not a valid ObjectId, search by slug
+    product = await Product.findOne({ slug: productId, isActive: true });
+  }
+
+  if (!product) {
+    return res.status(404).json({
+      success: false,
+      error: 'Product not found'
+    });
+  }
+
+  // Calculate pagination
+  const pageNum = parseInt(page);
+  const limitNum = parseInt(limit);
+  const skip = (pageNum - 1) * limitNum;
+
+  // Build sort object
+  const sortOrder = order === 'desc' ? -1 : 1;
+  let sortObj = {};
+
+  switch (sort) {
+    case 'rating':
+      sortObj = { rating: sortOrder };
+      break;
+    case 'createdAt':
+      sortObj = { createdAt: sortOrder };
+      break;
+    default:
+      sortObj = { createdAt: -1 };
+  }
+
+  // Get reviews for this product (only visible ones for public)
+  const reviews = await Review.find({
+    productId: product._id,
+    isVisible: true
+  })
+    .sort(sortObj)
+    .limit(limitNum)
+    .skip(skip)
+    .populate('productId', 'name slug')
+    .select('-__v');
+
+  // Get total count for pagination
+  const totalReviews = await Review.countDocuments({
+    productId: product._id,
+    isVisible: true
+  });
+
+  // Calculate review statistics
+  const reviewStats = await Review.aggregate([
+    {
+      $match: {
+        productId: product._id,
+        isVisible: true
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        averageRating: { $avg: '$rating' },
+        totalReviews: { $sum: 1 },
+        ratingDistribution: {
+          $push: '$rating'
+        }
+      }
+    }
+  ]);
+
+  // Calculate rating distribution
+  let ratingCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  if (reviewStats.length > 0) {
+    reviewStats[0].ratingDistribution.forEach(rating => {
+      ratingCounts[rating] = (ratingCounts[rating] || 0) + 1;
+    });
+  }
+
+  const totalPages = Math.ceil(totalReviews / limitNum);
+
+  res.status(200).json({
+    success: true,
+    data: {
+      reviews,
+      stats: {
+        averageRating: reviewStats.length > 0 ? Math.round(reviewStats[0].averageRating * 10) / 10 : 0,
+        totalReviews,
+        ratingDistribution: ratingCounts
+      },
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total: totalReviews,
+        totalPages,
+        hasNextPage: pageNum < totalPages,
+        hasPrevPage: pageNum > 1
+      }
+    }
+  });
+});
+
 module.exports = {
   getFeaturedProducts,
   getPremiumProducts,
@@ -400,5 +519,6 @@ module.exports = {
   getPublicCategories,
   getPublicCategory,
   searchProducts,
-  getHomepageData
+  getHomepageData,
+  getProductReviews
 };

@@ -51,6 +51,35 @@ interface ApiCategory {
   order: number;
 }
 
+interface ApiReview {
+  _id: string;
+  productId: string;
+  customerName: string;
+  customerPhone?: string;
+  rating: number;
+  title: string;
+  comment: string;
+  images?: string[];
+  isVerified: boolean;
+  isVisible: boolean;
+  adminReply?: string;
+  adminReplyDate?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ReviewStats {
+  averageRating: number;
+  totalReviews: number;
+  ratingDistribution: {
+    1: number;
+    2: number;
+    3: number;
+    4: number;
+    5: number;
+  };
+}
+
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>(); // This is actually the slug from URL
   const [product, setProduct] = useState<ApiProduct | null>(null);
@@ -62,6 +91,9 @@ export default function ProductDetail() {
   const [mainImageLoaded, setMainImageLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reviews, setReviews] = useState<ApiReview[]>([]);
+  const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
 
   // API base URL
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050/api';
@@ -104,6 +136,9 @@ export default function ProductDetail() {
       setMainImageLoaded(false);
       setIsImageTransitioning(false);
       
+      // Fetch reviews for this product
+      fetchProductReviews(slug);
+      
     } catch (err) {
       console.error('Error fetching product:', err);
       setError('Failed to load product');
@@ -124,6 +159,26 @@ export default function ProductDetail() {
       setCategories(categoriesData);
     } catch (err) {
       console.error('Error fetching categories:', err);
+    }
+  };
+
+  const fetchProductReviews = async (slug: string) => {
+    try {
+      setReviewsLoading(true);
+      const response = await fetch(`${API_BASE_URL}/products/${slug}/reviews`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch reviews');
+      }
+      
+      const result = await response.json();
+      if (result.success) {
+        setReviews(result.data.reviews || []);
+        setReviewStats(result.data.stats || null);
+      }
+    } catch (err) {
+      console.error('Error fetching reviews:', err);
+    } finally {
+      setReviewsLoading(false);
     }
   };
 
@@ -496,13 +551,19 @@ export default function ProductDetail() {
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className="w-5 h-5 fill-yellow-400 text-yellow-400"
+                            className={`w-5 h-5 ${
+                              reviewStats && i < Math.round(reviewStats.averageRating)
+                                ? "fill-yellow-400 text-yellow-400"
+                                : "text-muted-foreground"
+                            }`}
                           />
                         ))}
                       </div>
-                      <span className="text-lg font-semibold">4.8</span>
+                      <span className="text-lg font-semibold">
+                        {reviewStats?.averageRating?.toFixed(1) || "0.0"}
+                      </span>
                       <span className="text-muted-foreground">
-                        (24 reviews)
+                        ({reviewStats?.totalReviews || 0} reviews)
                       </span>
                     </div>
                   </div>
@@ -510,93 +571,124 @@ export default function ProductDetail() {
                   {/* Rating Breakdown */}
                   <div className="grid md:grid-cols-2 gap-8 mb-8">
                     <div className="space-y-3">
-                      {[5, 4, 3, 2, 1].map((rating) => (
-                        <div key={rating} className="flex items-center gap-3">
-                          <span className="text-sm font-medium w-8">
-                            {rating}★
-                          </span>
-                          <div className="flex-1 bg-muted rounded-full h-2">
-                            <div
-                              className="bg-yellow-400 h-2 rounded-full transition-all duration-500"
-                              style={{
-                                width:
-                                  rating === 5
-                                    ? "75%"
-                                    : rating === 4
-                                      ? "20%"
-                                      : "5%",
-                              }}
-                            />
+                      {[5, 4, 3, 2, 1].map((rating) => {
+                        const count = reviewStats?.ratingDistribution?.[rating] || 0;
+                        const percentage = reviewStats?.totalReviews ? 
+                          (count / reviewStats.totalReviews) * 100 : 0;
+                        
+                        return (
+                          <div key={rating} className="flex items-center gap-3">
+                            <span className="text-sm font-medium w-8">
+                              {rating}★
+                            </span>
+                            <div className="flex-1 bg-muted rounded-full h-2">
+                              <div
+                                className="bg-yellow-400 h-2 rounded-full transition-all duration-500"
+                                style={{
+                                  width: `${percentage}%`,
+                                }}
+                              />
+                            </div>
+                            <span className="text-sm text-muted-foreground w-8">
+                              {count}
+                            </span>
                           </div>
-                          <span className="text-sm text-muted-foreground w-8">
-                            {rating === 5 ? "18" : rating === 4 ? "5" : "1"}
-                          </span>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
 
                 {/* Individual Reviews */}
                 <div className="space-y-6">
-                  {[
-                    {
-                      name: "Sarah Johnson",
-                      rating: 5,
-                      date: "2 weeks ago",
-                      comment:
-                        "Absolutely love this product! The quality exceeded my expectations and the personalized service was fantastic.",
-                      verified: true,
-                    },
-                    {
-                      name: "Michael Chen",
-                      rating: 5,
-                      date: "1 month ago",
-                      comment:
-                        "Premium quality and excellent customer service. The WhatsApp support was very helpful in answering all my questions.",
-                      verified: true,
-                    },
-                    {
-                      name: "Emma Davis",
-                      rating: 4,
-                      date: "2 months ago",
-                      comment:
-                        "Great product overall. Delivery was fast and packaging was beautiful. Highly recommend!",
-                      verified: true,
-                    },
-                  ].map((review, index) => (
-                    <div
-                      key={index}
-                      className="border border-border rounded-lg p-6"
-                    >
-                      <div className="flex items-start justify-between mb-3">
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <h5 className="font-semibold">{review.name}</h5>
-                            {review.verified && (
-                              <Badge variant="secondary" className="text-xs">
-                                Verified Purchase
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="flex">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`w-4 h-4 ${i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`}
-                                />
-                              ))}
+                  {reviewsLoading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
+                      <p className="text-muted-foreground mt-2">Loading reviews...</p>
+                    </div>
+                  ) : reviews.length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-muted-foreground">No reviews yet. Be the first to review this product!</p>
+                    </div>
+                  ) : (
+                    reviews.map((review) => (
+                      <div
+                        key={review._id}
+                        className="border border-border rounded-lg p-6"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <h5 className="font-semibold">{review.customerName}</h5>
+                              {review.isVerified && (
+                                <Badge variant="secondary" className="text-xs">
+                                  Verified Purchase
+                                </Badge>
+                              )}
                             </div>
-                            <span className="text-sm text-muted-foreground">
-                              {review.date}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <div className="flex">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`w-4 h-4 ${i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-sm text-muted-foreground">
+                                {new Date(review.createdAt).toLocaleDateString('en-US', {
+                                  year: 'numeric',
+                                  month: 'short',
+                                  day: 'numeric'
+                                })}
+                              </span>
+                            </div>
                           </div>
                         </div>
+                        
+                        {/* Review Title */}
+                        {review.title && (
+                          <h6 className="font-medium mb-2">{review.title}</h6>
+                        )}
+                        
+                        {/* Review Comment */}
+                        <p className="text-muted-foreground mb-3">{review.comment}</p>
+                        
+                        {/* Review Images */}
+                        {review.images && review.images.length > 0 && (
+                          <div className="flex gap-2 mb-3">
+                            {review.images.map((image, idx) => (
+                              <img
+                                key={idx}
+                                src={image}
+                                alt={`Review image ${idx + 1}`}
+                                className="w-16 h-16 object-cover rounded-lg border"
+                              />
+                            ))}
+                          </div>
+                        )}
+                        
+                        {/* Admin Reply */}
+                        {review.adminReply && (
+                          <div className="mt-4 pl-4 border-l-2 border-blue-200 bg-blue-50 p-3 rounded-r-lg">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge variant="outline" className="text-xs">
+                                Scorpio Team
+                              </Badge>
+                              <span className="text-xs text-muted-foreground">
+                                {review.adminReplyDate && new Date(review.adminReplyDate).toLocaleDateString('en-US', {
+                                  year: 'numeric',
+                                  month: 'short',
+                                  day: 'numeric'
+                                })}
+                              </span>
+                            </div>
+                            <p className="text-sm">{review.adminReply}</p>
+                          </div>
+                        )}
                       </div>
-                      <p className="text-muted-foreground">{review.comment}</p>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </div>
             </TabsContent>
