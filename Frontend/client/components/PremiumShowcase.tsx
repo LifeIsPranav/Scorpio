@@ -34,6 +34,7 @@ export default function PremiumShowcase() {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [premiumProducts, setPremiumProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   useEffect(() => {
     const fetchPremiumProducts = async () => {
@@ -51,6 +52,11 @@ export default function PremiumShowcase() {
 
     fetchPremiumProducts();
   }, []);
+
+  // Reset selected image when slide changes
+  useEffect(() => {
+    setSelectedImageIndex(0);
+  }, [currentSlide]);
 
   // Auto-play functionality
   useEffect(() => {
@@ -123,7 +129,7 @@ export default function PremiumShowcase() {
               {/* Product Image */}
               <div className="relative aspect-square lg:aspect-[4/3] rounded-2xl overflow-hidden bg-muted group">
                 <img
-                  src={currentProduct.images[0]}
+                  src={currentProduct.images[selectedImageIndex]}
                   alt={currentProduct.name}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
@@ -131,10 +137,32 @@ export default function PremiumShowcase() {
                 {/* Image overlay with additional images preview */}
                 {currentProduct.images.length > 1 && (
                   <div className="absolute bottom-4 left-4 flex gap-2">
+                    {/* Main image thumbnail */}
+                    <div
+                      className={`w-12 h-12 rounded-lg overflow-hidden border-2 cursor-pointer transition-all duration-200 ${
+                        selectedImageIndex === 0 
+                          ? 'border-primary ring-2 ring-primary/50' 
+                          : 'border-white/50 hover:border-white/80'
+                      }`}
+                      onClick={() => setSelectedImageIndex(0)}
+                    >
+                      <img
+                        src={currentProduct.images[0]}
+                        alt={`${currentProduct.name} 1`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    
+                    {/* Additional image thumbnails */}
                     {currentProduct.images.slice(1, 4).map((image, index) => (
                       <div
                         key={index}
-                        className="w-12 h-12 rounded-lg overflow-hidden border-2 border-white/50"
+                        className={`w-12 h-12 rounded-lg overflow-hidden border-2 cursor-pointer transition-all duration-200 ${
+                          selectedImageIndex === index + 1 
+                            ? 'border-primary ring-2 ring-primary/50' 
+                            : 'border-white/50 hover:border-white/80'
+                        }`}
+                        onClick={() => setSelectedImageIndex(index + 1)}
                       >
                         <img
                           src={image}
@@ -143,6 +171,13 @@ export default function PremiumShowcase() {
                         />
                       </div>
                     ))}
+                    
+                    {/* Show "+" indicator if there are more than 4 images */}
+                    {currentProduct.images.length > 4 && (
+                      <div className="w-12 h-12 rounded-lg bg-black/50 border-2 border-white/50 flex items-center justify-center text-white text-xs font-semibold">
+                        +{currentProduct.images.length - 4}
+                      </div>
+                    )}
                   </div>
                 )}
 
