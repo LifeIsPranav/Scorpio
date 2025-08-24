@@ -312,13 +312,10 @@ export default function ProductDetail() {
   };
 
   // WhatsApp function
-  const openWhatsApp = (product: ApiProduct) => {
-    const phoneNumber = "+1234567890"; // Replace with your actual WhatsApp number
-    const message = encodeURIComponent(
-      product.whatsappMessage ||
-        `Hi! I'm interested in ${product.name}. Could you tell me more about it?`,
-    );
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+    const openWhatsApp = () => {
+    const phoneNumber = import.meta.env.VITE_WHATSAPP_PHONE;
+    const message = `Hi! I'm interested in ${product?.name}. Can you provide more information?`;
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
   };
 

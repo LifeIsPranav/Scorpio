@@ -1,5 +1,6 @@
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+
 import {
   ShoppingBag,
   MessageCircle,
@@ -10,7 +11,7 @@ import {
 
 export default function Footer() {
   const openWhatsApp = () => {
-    const phoneNumber = "+1234567890"; // Replace with your actual number
+    const phoneNumber = import.meta.env.VITE_WHATSAPP_PHONE;
     const message = "Hi! I'd like to learn more about your products.";
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");

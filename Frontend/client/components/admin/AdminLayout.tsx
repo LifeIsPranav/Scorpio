@@ -252,7 +252,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                         Admin User
                       </p>
                       <p className="text-xs leading-none text-muted-foreground">
-                        admin@premiumstore.com
+                        {import.meta.env.VITE_ADMIN_EMAIL}
                       </p>
                     </div>
                   </DropdownMenuLabel>

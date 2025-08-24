@@ -1,11 +1,11 @@
-import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import Navigation from "@/components/Navigation";
+import { Globe, Heart, MessageCircle, Trophy, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Users, Globe, Heart, Trophy } from "lucide-react";
 
 export default function Careers() {
   const openWhatsApp = () => {
-    const phoneNumber = "+1234567890";
+    const phoneNumber = import.meta.env.VITE_WHATSAPP_PHONE;
     const message = "Hi! I'm interested in career opportunities at Scorpio.";
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");

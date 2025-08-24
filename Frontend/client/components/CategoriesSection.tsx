@@ -129,7 +129,7 @@ export default function CategoriesSection() {
             onClick={() => {
               const message =
                 "Hi! I'm looking for a specific product. Could you help me find it?";
-              const phoneNumber = "+1234567890"; // Replace with your actual number
+              const phoneNumber = import.meta.env.VITE_WHATSAPP_PHONE;
               const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
               window.open(whatsappUrl, "_blank");
             }}

@@ -22,23 +22,21 @@ interface ProductCardProps {
   product: Product;
 }
 
-const openWhatsApp = (product: Product) => {
-  const phoneNumber = "+1234567890"; // Replace with your actual WhatsApp number
-  const message = encodeURIComponent(
-    `Hi! I'm interested in ${product.name}. Could you tell me more about it?`
-  );
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
-  window.open(whatsappUrl, "_blank");
-};
-
 export default function ProductCard({ product }: ProductCardProps) {
   const [currentImage, setCurrentImage] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
+  const openWhatsApp = () => {
+    const phoneNumber = import.meta.env.VITE_WHATSAPP_PHONE;
+    const message = `Hi! I'm interested in ${product.name}. Can you provide more information?`;
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank");
+  };
+
   const handleWhatsAppClick = () => {
-    openWhatsApp(product);
+    openWhatsApp();
   };
 
   return (

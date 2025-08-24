@@ -1,11 +1,11 @@
-import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import Navigation from "@/components/Navigation";
+import { Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Phone, Mail, MapPin, Clock } from "lucide-react";
 
 export default function Contact() {
   const openWhatsApp = () => {
-    const phoneNumber = "+1234567890";
+    const phoneNumber = import.meta.env.VITE_WHATSAPP_PHONE;
     const message = "Hi! I'd like to get in touch with Scorpio.";
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
@@ -49,7 +49,7 @@ export default function Contact() {
                   "Speak directly with our team for detailed product discussions",
                 action: "Call Now",
                 color: "bg-foreground hover:bg-foreground/90",
-                onClick: () => window.open("tel:+1234567890"),
+                onClick: () => window.open(`tel:${import.meta.env.VITE_PHONE_NUMBER}`),
               },
               {
                 icon: Mail,
@@ -58,7 +58,7 @@ export default function Contact() {
                   "Send detailed inquiries and get comprehensive responses",
                 action: "Send Email",
                 color: "bg-foreground hover:bg-foreground/90",
-                onClick: () => window.open("mailto:hello@scorpio.com"),
+                onClick: () => window.open(`mailto:${import.meta.env.VITE_CONTACT_EMAIL}`),
               },
             ].map((method, index) => (
               <div
@@ -89,22 +89,22 @@ export default function Contact() {
                 {
                   icon: MapPin,
                   title: "Location",
-                  info: "123 Premium Street\nLuxury District, City 12345",
+                  info: `${import.meta.env.VITE_BUSINESS_ADDRESS_LINE1}\n${import.meta.env.VITE_BUSINESS_ADDRESS_LINE2}`,
                 },
                 {
                   icon: Clock,
                   title: "Business Hours",
-                  info: "Mon - Fri: 9AM - 8PM\nSat - Sun: 10AM - 6PM",
+                  info: `${import.meta.env.VITE_BUSINESS_HOURS_WEEKDAY}\n${import.meta.env.VITE_BUSINESS_HOURS_WEEKEND}`,
                 },
                 {
                   icon: Phone,
                   title: "Phone",
-                  info: "+1 (234) 567-890",
+                  info: import.meta.env.VITE_PHONE_NUMBER,
                 },
                 {
                   icon: Mail,
                   title: "Email",
-                  info: "hello@scorpio.com",
+                  info: import.meta.env.VITE_CONTACT_EMAIL,
                 },
               ].map((contact, index) => (
                 <div key={index} className="text-center">

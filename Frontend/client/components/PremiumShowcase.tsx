@@ -21,7 +21,7 @@ interface Product {
 }
 
 const openWhatsApp = (product: Product) => {
-  const phoneNumber = "+1234567890"; // Replace with your actual WhatsApp number
+  const phoneNumber = import.meta.env.VITE_WHATSAPP_PHONE;
   const message = encodeURIComponent(
     `Hi! I'm interested in ${product.name}. Could you tell me more about it?`
   );
