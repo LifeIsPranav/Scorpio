@@ -1,0 +1,29 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Development files
+.env.local
+.env.development
+.env.test
+
+# Build artifacts (except dist/spa)
+dist/server
+.vite
+
+# Development configs
+vite.config.server.ts
+
+# Documentation
+AGENTS.md
+FRONTEND_REFERENCE.md
+
+# Other
+.DS_Store
+*.log
+coverage/
+.nyc_output/
+
+# Netlify specific (since we're using Vercel)
+netlify/
+netlify.toml
