@@ -510,6 +510,69 @@ const getProductReviews = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Submit a customer review for a product
+// @route   POST /api/products/:productId/reviews
+// @access  Public
+const submitCustomerReview = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+  const { customerName, customerPhone, rating, title, comment, images } = req.body;
+
+  // Basic validation
+  if (!customerName || !rating || !comment) {
+    return res.status(400).json({
+      success: false,
+      message: 'Customer name, rating, and comment are required'
+    });
+  }
+
+  if (rating < 1 || rating > 5) {
+    return res.status(400).json({
+      success: false,
+      message: 'Rating must be between 1 and 5'
+    });
+  }
+
+  // Find the product (by slug or ObjectId)
+  let product;
+  try {
+    product = await Product.findById(productId);
+  } catch (error) {
+    // If not found by ID, try by slug
+    product = await Product.findOne({ slug: productId });
+  }
+
+  if (!product) {
+    return res.status(404).json({
+      success: false,
+      message: 'Product not found'
+    });
+  }
+
+  // Create the review
+  const review = new Review({
+    productId: product._id,
+    customerName: customerName.trim(),
+    customerPhone: customerPhone ? customerPhone.trim() : undefined,
+    rating: parseInt(rating),
+    title: title ? title.trim() : '',
+    comment: comment.trim(),
+    images: images || [],
+    isVerified: false, // Customer submissions are not verified by default
+    isVisible: true // Show customer reviews by default (can be moderated later)
+  });
+
+  await review.save();
+
+  // Populate the product details for response
+  await review.populate('productId', 'name slug images');
+
+  res.status(201).json({
+    success: true,
+    data: review,
+    message: 'Thank you for your review! It has been submitted successfully.'
+  });
+});
+
 module.exports = {
   getFeaturedProducts,
   getPremiumProducts,
@@ -520,5 +583,6 @@ module.exports = {
   getPublicCategory,
   searchProducts,
   getHomepageData,
-  getProductReviews
+  getProductReviews,
+  submitCustomerReview
 };

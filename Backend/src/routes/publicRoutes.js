@@ -9,7 +9,8 @@ const {
   getPublicCategory,
   searchProducts,
   getHomepageData,
-  getProductReviews
+  getProductReviews,
+  submitCustomerReview
 } = require('../controllers/publicController');
 const { validatePagination, validateObjectId } = require('../middleware/validationMiddleware');
 
@@ -48,5 +49,8 @@ router.get('/categories/:categoryId/products', validatePagination, getProductsBy
 
 // @route   GET /api/products/:productId/reviews
 router.get('/products/:productId/reviews', getProductReviews);
+
+// @route   POST /api/products/:productId/reviews
+router.post('/products/:productId/reviews', submitCustomerReview);
 
 module.exports = router;

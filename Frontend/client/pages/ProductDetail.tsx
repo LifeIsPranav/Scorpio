@@ -5,7 +5,11 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 
 import {
   ChevronLeft,
@@ -94,6 +98,18 @@ export default function ProductDetail() {
   const [reviews, setReviews] = useState<ApiReview[]>([]);
   const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
   const [reviewsLoading, setReviewsLoading] = useState(false);
+  
+  // Customer review form state
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewForm, setReviewForm] = useState({
+    customerName: '',
+    customerPhone: '',
+    rating: 0,
+    title: '',
+    comment: ''
+  });
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewSubmitSuccess, setReviewSubmitSuccess] = useState(false);
 
   // API base URL
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050/api';
@@ -180,6 +196,83 @@ export default function ProductDetail() {
     } finally {
       setReviewsLoading(false);
     }
+  };
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validation with better user feedback
+    if (!reviewForm.customerName.trim()) {
+      alert('Please enter your name.');
+      return;
+    }
+    
+    if (reviewForm.rating === 0) {
+      alert('Please select a rating by clicking on the stars.');
+      return;
+    }
+    
+    if (!reviewForm.comment.trim()) {
+      alert('Please write your review comment.');
+      return;
+    }
+
+    if (reviewForm.comment.trim().length < 10) {
+      alert('Please write a more detailed review (at least 10 characters).');
+      return;
+    }
+
+    try {
+      setReviewSubmitting(true);
+      const response = await fetch(`${API_BASE_URL}/products/${id}/reviews`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          customerName: reviewForm.customerName.trim(),
+          customerPhone: reviewForm.customerPhone.trim() || undefined,
+          rating: reviewForm.rating,
+          title: reviewForm.title.trim() || undefined,
+          comment: reviewForm.comment.trim()
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (response.ok && result.success) {
+        setReviewSubmitSuccess(true);
+        setReviewForm({
+          customerName: '',
+          customerPhone: '',
+          rating: 0,
+          title: '',
+          comment: ''
+        });
+        
+        // Refresh reviews to show the new review
+        if (id) {
+          fetchProductReviews(id);
+        }
+        
+        // Hide form after 4 seconds to give user time to see success message
+        setTimeout(() => {
+          setShowReviewForm(false);
+          setReviewSubmitSuccess(false);
+        }, 4000);
+      } else {
+        alert(result.message || 'Failed to submit review. Please try again.');
+      }
+    } catch (err) {
+      console.error('Error submitting review:', err);
+      alert('Failed to submit review. Please check your internet connection and try again.');
+    } finally {
+      setReviewSubmitting(false);
+    }
+  };
+
+  const handleRatingClick = (rating: number) => {
+    setReviewForm(prev => ({ ...prev, rating }));
   };
 
   // WhatsApp function
@@ -598,6 +691,163 @@ export default function ProductDetail() {
                     </div>
                   </div>
                 </div>
+
+                {/* Write a Review Button */}
+                <div className="mb-8">
+                  <Button 
+                    onClick={() => setShowReviewForm(!showReviewForm)}
+                    className="w-full sm:w-auto"
+                    disabled={reviewSubmitting}
+                  >
+                    {showReviewForm ? 'Cancel Review' : 'Write a Review'}
+                  </Button>
+                </div>
+
+                {/* Customer Review Form */}
+                {showReviewForm && (
+                  <Card className="mb-8">
+                    <CardHeader>
+                      <CardTitle>Write Your Review</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {reviewSubmitSuccess ? (
+                        <div className="text-center py-8">
+                          <div className="text-green-600 text-2xl mb-4">
+                            🎉
+                          </div>
+                          <div className="text-green-600 text-lg font-semibold mb-2">
+                            Thank you for your review!
+                          </div>
+                          <p className="text-muted-foreground mb-4">
+                            Your review has been submitted successfully and will appear in the reviews section below.
+                          </p>
+                          <div className="text-sm text-muted-foreground">
+                            This form will close automatically in a few seconds...
+                          </div>
+                        </div>
+                      ) : (
+                        <form onSubmit={handleReviewSubmit} className="space-y-6">
+                          {/* Rating */}
+                          <div>
+                            <Label className="text-base font-medium">
+                              Rating <span className="text-red-500">*</span>
+                            </Label>
+                            <div className="flex items-center gap-1 mt-2">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <button
+                                  key={star}
+                                  type="button"
+                                  onClick={() => handleRatingClick(star)}
+                                  className="focus:outline-none hover:scale-110 transition-transform"
+                                >
+                                  <Star
+                                    className={`w-8 h-8 ${
+                                      star <= reviewForm.rating
+                                        ? 'fill-yellow-400 text-yellow-400'
+                                        : 'text-muted-foreground hover:text-yellow-400'
+                                    }`}
+                                  />
+                                </button>
+                              ))}
+                              {reviewForm.rating > 0 && (
+                                <span className="ml-2 text-sm text-muted-foreground">
+                                  {reviewForm.rating} out of 5 stars
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Customer Name */}
+                          <div>
+                            <Label htmlFor="customerName" className="text-base font-medium">
+                              Your Name <span className="text-red-500">*</span>
+                            </Label>
+                            <Input
+                              id="customerName"
+                              type="text"
+                              value={reviewForm.customerName}
+                              onChange={(e) => setReviewForm(prev => ({ ...prev, customerName: e.target.value }))}
+                              placeholder="Enter your full name"
+                              className="mt-1"
+                              required
+                            />
+                          </div>
+
+                          {/* Customer Phone (Optional) */}
+                          <div>
+                            <Label htmlFor="customerPhone" className="text-base font-medium">
+                              Phone Number (Optional)
+                            </Label>
+                            <Input
+                              id="customerPhone"
+                              type="tel"
+                              value={reviewForm.customerPhone}
+                              onChange={(e) => setReviewForm(prev => ({ ...prev, customerPhone: e.target.value }))}
+                              placeholder="Enter your phone number"
+                              className="mt-1"
+                            />
+                          </div>
+
+                          {/* Review Title (Optional) */}
+                          <div>
+                            <Label htmlFor="reviewTitle" className="text-base font-medium">
+                              Review Title (Optional)
+                            </Label>
+                            <Input
+                              id="reviewTitle"
+                              type="text"
+                              value={reviewForm.title}
+                              onChange={(e) => setReviewForm(prev => ({ ...prev, title: e.target.value }))}
+                              placeholder="Brief title for your review"
+                              className="mt-1"
+                            />
+                          </div>
+
+                          {/* Review Comment */}
+                          <div>
+                            <Label htmlFor="reviewComment" className="text-base font-medium">
+                              Your Review <span className="text-red-500">*</span>
+                            </Label>
+                            <Textarea
+                              id="reviewComment"
+                              value={reviewForm.comment}
+                              onChange={(e) => setReviewForm(prev => ({ ...prev, comment: e.target.value }))}
+                              placeholder="Share your experience with this product..."
+                              className="mt-1 min-h-[120px]"
+                              required
+                            />
+                          </div>
+
+                          {/* Submit Button */}
+                          <div className="flex gap-3">
+                            <Button
+                              type="submit"
+                              disabled={reviewSubmitting}
+                              className="flex-1 sm:flex-none"
+                            >
+                              {reviewSubmitting ? (
+                                <>
+                                  <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                                  Submitting...
+                                </>
+                              ) : (
+                                'Submit Review'
+                              )}
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => setShowReviewForm(false)}
+                              disabled={reviewSubmitting}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </form>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
 
                 {/* Individual Reviews */}
                 <div className="space-y-6">
