@@ -1,5 +1,5 @@
 import ProductFormDialog from "@/components/admin/ProductFormDialog";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +47,8 @@ import {
   Eye,
   Star,
   Crown,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 interface Product {
@@ -82,21 +84,78 @@ export default function AdminProducts() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [pagination, setPagination] = useState({
+    hasNextPage: false,
+    hasPrevPage: false,
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1
+  });
+  
+  // Debounced search
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+
+  // Debounced search
+  const [searchInput, setSearchInput] = useState("");
+
+  // Debounce search input
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setSearchTerm(searchInput);
+      setCurrentPage(1);
+    }, 500);
+    return () => clearTimeout(timeoutId);
+  }, [searchInput]);
 
   // Fetch products and categories on component mount
   useEffect(() => {
-    Promise.all([fetchProducts(), fetchCategories()]);
+    fetchCategories();
   }, []);
 
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Fetch products when pagination parameters change
+  useEffect(() => {
+    fetchProducts();
+  }, [currentPage, debouncedSearchTerm, selectedCategory]);
+
   const fetchProducts = async () => {
+    setLoading(true);
     try {
-      const response = await adminProductsApi.getAll() as any;
+      const params = {
+        page: currentPage.toString(),
+        limit: '10',
+        ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
+        ...(selectedCategory !== 'all' && { category: selectedCategory })
+      };
+      
+      const response = await adminProductsApi.getAll(params) as any;
       if (response.success) {
         setProducts(response.data || []);
+        if (response.pagination) {
+          setPagination(response.pagination);
+          setTotalPages(response.pagination.totalPages);
+          setTotalProducts(response.pagination.total);
+        }
       }
     } catch (err) {
       console.error('Error fetching products:', err);
       setError('Failed to fetch products');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -108,19 +167,23 @@ export default function AdminProducts() {
       }
     } catch (err) {
       console.error('Error fetching categories:', err);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch =
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "all" || product.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  // Reset to first page when search or category filter changes
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value);
+    setCurrentPage(1);
+  };  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const filteredProducts = products; // Products are already filtered on the backend
 
   const handleAddProduct = () => {
     setEditingProduct(null);
@@ -143,7 +206,8 @@ export default function AdminProducts() {
     try {
       const response = await adminProductsApi.delete(productToDelete._id) as any;
       if (response.success) {
-        setProducts(products.filter(prod => prod._id !== productToDelete._id));
+        // Refresh products after deletion
+        fetchProducts();
         setDeleteDialogOpen(false);
         setProductToDelete(null);
       }
@@ -160,9 +224,8 @@ export default function AdminProducts() {
         premium: !product.premium
       }) as any;
       if (response.success) {
-        setProducts(products.map(prod => 
-          prod._id === product._id ? response.data : prod
-        ));
+        // Refresh products to show updated data
+        fetchProducts();
       }
     } catch (err) {
       console.error('Error updating product:', err);
@@ -181,15 +244,15 @@ export default function AdminProducts() {
         // Update existing product
         const response = await adminProductsApi.update(editingProduct._id, productData) as any;
         if (response.success) {
-          setProducts(products.map(prod => 
-            prod._id === editingProduct._id ? response.data : prod
-          ));
+          // Refresh the current page to show updated data
+          fetchProducts();
         }
       } else {
         // Create new product
         const response = await adminProductsApi.create(productData) as any;
         if (response.success) {
-          setProducts([...products, response.data]);
+          // Refresh the current page to show new product
+          fetchProducts();
         }
       }
       setShowProductForm(false);
@@ -199,10 +262,6 @@ export default function AdminProducts() {
       setError('Failed to save product');
     }
   };
-
-  if (loading) {
-    return <div className="p-6 text-center">Loading products...</div>;
-  }
 
   if (error) {
     return <div className="p-6 text-center text-red-600">{error}</div>;
@@ -241,15 +300,15 @@ export default function AdminProducts() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input
                   placeholder="Search products..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  value={searchInput}
+                  onChange={(e) => handleSearchChange(e.target.value)}
                   className="pl-10"
                 />
               </div>
             </div>
             <select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={(e) => handleCategoryChange(e.target.value)}
               className="px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
             >
               <option value="all">All Categories</option>
@@ -266,10 +325,50 @@ export default function AdminProducts() {
       {/* Products Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Products ({filteredProducts.length})</CardTitle>
-          <CardDescription>
-            A list of all products in your store
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Products ({totalProducts})</CardTitle>
+              <CardDescription>
+                Showing {products.length} of {totalProducts} products 
+                {totalProducts > 0 && ` • Page ${currentPage} of ${totalPages}`}
+              </CardDescription>
+            </div>
+            {totalPages > 1 && (
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={!pagination.hasPrevPage}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                <div className="flex items-center space-x-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handlePageChange(page)}
+                      className="w-10"
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={!pagination.hasNextPage}
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
@@ -285,7 +384,7 @@ export default function AdminProducts() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredProducts.map((product) => (
+                {products.map((product) => (
                   <TableRow key={product._id}>
                     <TableCell>
                       <img
@@ -377,7 +476,7 @@ export default function AdminProducts() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {filteredProducts.length === 0 && (
+                {products.length === 0 && !loading && (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8">
                       <div className="text-muted-foreground">
@@ -386,9 +485,110 @@ export default function AdminProducts() {
                     </TableCell>
                   </TableRow>
                 )}
+                {loading && (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8">
+                      <div className="text-muted-foreground">
+                        Loading products...
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </div>
+          
+          {/* Pagination at bottom */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-2 py-4">
+              <div className="text-sm text-muted-foreground">
+                Showing {(currentPage - 1) * 10 + 1} to {Math.min(currentPage * 10, totalProducts)} of {totalProducts} products
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={!pagination.hasPrevPage}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                <div className="flex items-center space-x-1">
+                  {(() => {
+                    const maxVisiblePages = 5;
+                    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                    
+                    if (endPage - startPage + 1 < maxVisiblePages) {
+                      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                    }
+                    
+                    const pages = [];
+                    
+                    if (startPage > 1) {
+                      pages.push(
+                        <Button
+                          key={1}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handlePageChange(1)}
+                          className="w-10"
+                        >
+                          1
+                        </Button>
+                      );
+                      if (startPage > 2) {
+                        pages.push(<span key="start-ellipsis" className="px-2">...</span>);
+                      }
+                    }
+                    
+                    for (let i = startPage; i <= endPage; i++) {
+                      pages.push(
+                        <Button
+                          key={i}
+                          variant={currentPage === i ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handlePageChange(i)}
+                          className="w-10"
+                        >
+                          {i}
+                        </Button>
+                      );
+                    }
+                    
+                    if (endPage < totalPages) {
+                      if (endPage < totalPages - 1) {
+                        pages.push(<span key="end-ellipsis" className="px-2">...</span>);
+                      }
+                      pages.push(
+                        <Button
+                          key={totalPages}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handlePageChange(totalPages)}
+                          className="w-10"
+                        >
+                          {totalPages}
+                        </Button>
+                      );
+                    }
+                    
+                    return pages;
+                  })()}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={!pagination.hasNextPage}
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
