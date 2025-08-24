@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/hooks/use-toast";
 
 import {
   ChevronLeft,
@@ -319,6 +320,48 @@ export default function ProductDetail() {
     window.open(whatsappUrl, "_blank");
   };
 
+  // Share function
+  const handleShare = async () => {
+    const shareData = {
+      title: product?.name || 'Scorpio Product',
+      text: `Check out this amazing product: ${product?.name}`,
+      url: window.location.href
+    };
+
+    try {
+      // Check if Web Share API is supported
+      if (navigator.share) {
+        await navigator.share(shareData);
+        toast({
+          title: "Shared successfully!",
+          description: "Product shared using your device's native sharing.",
+        });
+      } else {
+        // Fallback: Copy to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: "Link copied!",
+          description: "Product link has been copied to your clipboard.",
+        });
+      }
+    } catch (error) {
+      // Fallback: Copy to clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: "Link copied!",
+          description: "Product link has been copied to your clipboard.",
+        });
+      } catch (clipboardError) {
+        // Ultimate fallback: Show the URL
+        toast({
+          title: "Share this product",
+          description: window.location.href,
+        });
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen">
@@ -548,7 +591,7 @@ export default function ProductDetail() {
               {/* Action Buttons */}
               <div className="flex gap-4 pt-4">
                 <Button
-                  onClick={() => openWhatsApp(product)}
+                  onClick={() => openWhatsApp()}
                   size="lg"
                   className="flex-1 bg-foreground hover:bg-foreground/90 text-background rounded-full text-lg py-6 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
                 >
@@ -571,6 +614,7 @@ export default function ProductDetail() {
                   variant="outline"
                   size="icon"
                   className="rounded-full w-12 h-12"
+                  onClick={handleShare}
                 >
                   <Share2 className="w-5 h-5" />
                 </Button>
@@ -1115,7 +1159,7 @@ export default function ProductDetail() {
                         or return queries.
                       </p>
                       <Button
-                        onClick={() => openWhatsApp(product)}
+                        onClick={() => openWhatsApp()}
                         variant="outline"
                         size="sm"
                         className="w-full"

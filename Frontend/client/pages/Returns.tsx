@@ -1,7 +1,7 @@
-import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import Navigation from "@/components/Navigation";
+import { Clock, MessageCircle, RotateCcw, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { RotateCcw, MessageCircle, Shield, Clock } from "lucide-react";
 
 export default function Returns() {
   const openWhatsApp = () => {
@@ -179,7 +179,7 @@ export default function Returns() {
                   Items damaged by misuse or wear
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-red-600 mt-1">���</span>
+                  <span className="text-red-600 mt-1">✗</span>
                   Products without original packaging
                 </li>
                 <li className="flex items-start gap-2">
