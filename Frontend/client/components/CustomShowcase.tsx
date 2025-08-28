@@ -72,27 +72,26 @@ export default function CustomShowcase() {
 
   return (
     <ScrollReveal>
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20">
-        <div className="max-w-7xl mx-auto">
+      <section className="py-24 bg-gradient-to-b from-muted/20 via-muted/25 to-muted/15 relative">
+        {/* Gradient overlay for smooth transition */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/10 to-background/20"></div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-full mb-6">
-              <Settings className="w-8 h-8 text-white" />
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Custom Products
-              <span className="block text-lg font-normal text-orange-600 dark:text-orange-400 mt-2">
-                Personalize to Your Needs
-              </span>
+          <div className="text-center mb-16">
+            {/* <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-foreground/10 to-foreground/20 rounded-full mb-6">
+              <Settings className="w-8 h-8 text-foreground" />
+            </div> */}
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              Custom <span className="gradient-text">Products</span>
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Create something unique with our customizable products. Choose your preferences, 
               specifications, and let us craft the perfect solution for you.
             </p>
           </div>
 
           {/* Products Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {products.map((product, index) => (
               <div
                 key={product._id}
@@ -110,9 +109,9 @@ export default function CustomShowcase() {
           </div>
 
           {/* Call to Action */}
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center bg-white dark:bg-gray-800 rounded-full px-6 py-3 shadow-lg border border-orange-200 dark:border-orange-800 mb-6">
-              <span className="text-orange-600 dark:text-orange-400 font-medium">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center justify-center bg-card rounded-full px-6 py-3 shadow-lg border border-border mb-6">
+              <span className="text-muted-foreground font-medium">
                 ✨ Need something specific? We've got you covered!
               </span>
             </div>
@@ -120,7 +119,7 @@ export default function CustomShowcase() {
               <Button
                 asChild
                 size="lg"
-                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-6 rounded-full text-lg font-semibold shadow-lg transform hover:scale-105 transition-all duration-300"
+                className="bg-foreground hover:bg-foreground/90 text-background px-8 py-6 rounded-full text-lg font-semibold shadow-lg transform hover:scale-105 transition-all duration-300"
               >
                 <Link to="/products?custom=true">
                   <Settings className="w-5 h-5 mr-2" />
@@ -132,7 +131,7 @@ export default function CustomShowcase() {
                 asChild
                 variant="outline"
                 size="lg"
-                className="border-2 border-orange-500 text-orange-600 hover:bg-orange-50 dark:text-orange-400 dark:border-orange-400 dark:hover:bg-orange-950/20 px-8 py-6 rounded-full text-lg font-semibold"
+                className="border-2 border-border text-foreground hover:bg-muted px-8 py-6 rounded-full text-lg font-semibold"
               >
                 <Link to="/contact">
                   Request Custom Quote
@@ -142,37 +141,37 @@ export default function CustomShowcase() {
           </div>
 
           {/* Features highlight */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
-            <div className="text-center p-6 bg-white/60 dark:bg-gray-800/60 rounded-xl backdrop-blur-sm">
-              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-6 bg-card/60 rounded-xl backdrop-blur-sm border border-border/50">
+              <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🎨</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 Full Customization
               </h3>
-              <p className="text-gray-600 dark:text-gray-300">
+              <p className="text-muted-foreground">
                 Choose colors, sizes, materials, and add your personal touch to every product.
               </p>
             </div>
-            <div className="text-center p-6 bg-white/60 dark:bg-gray-800/60 rounded-xl backdrop-blur-sm">
-              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-6 bg-card/60 rounded-xl backdrop-blur-sm border border-border/50">
+              <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">💬</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 Direct Communication
               </h3>
-              <p className="text-gray-600 dark:text-gray-300">
+              <p className="text-muted-foreground">
                 Your requirements are automatically shared via WhatsApp for quick assistance.
               </p>
             </div>
-            <div className="text-center p-6 bg-white/60 dark:bg-gray-800/60 rounded-xl backdrop-blur-sm">
-              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-6 bg-card/60 rounded-xl backdrop-blur-sm border border-border/50">
+              <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">⚡</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 Quick Turnaround
               </h3>
-              <p className="text-gray-600 dark:text-gray-300">
+              <p className="text-muted-foreground">
                 Fast production and delivery of your custom products with premium quality.
               </p>
             </div>

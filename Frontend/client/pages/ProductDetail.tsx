@@ -640,7 +640,7 @@ export default function ProductDetail() {
                     <div className="text-lg text-muted-foreground line-through">
                       {product.price}
                     </div>
-                    <div className="text-3xl font-bold text-green-600">
+                    <div className="text-3xl font-bold text-primary">
                       ₹{totalPrice.toLocaleString('en-IN')}
                     </div>
                   </div>
@@ -651,12 +651,12 @@ export default function ProductDetail() {
 
               {/* Custom Product Configuration */}
               {product.custom && product.customFields && product.customFields.length > 0 && (
-                <div className="space-y-6 border rounded-lg p-6 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20">
+                <div className="space-y-6 border rounded-lg p-6 bg-card/50 border-border">
                   <div className="flex items-center gap-2">
-                    <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
+                    <Badge className="bg-muted text-foreground border-border">
                       Customizable Product
                     </Badge>
-                    <h3 className="text-lg font-semibold text-orange-900 dark:text-orange-100">
+                    <h3 className="text-lg font-semibold text-foreground">
                       Configure Your Product
                     </h3>
                   </div>
@@ -666,12 +666,12 @@ export default function ProductDetail() {
                       <div key={index} className="space-y-2">
                         <Label className="text-sm font-medium">
                           {field.fieldName}
-                          {field.required && <span className="text-red-500 ml-1">*</span>}
+                          {field.required && <span className="text-destructive ml-1">*</span>}
                         </Label>
                         
                         {field.fieldType === 'dropdown' && (
                           <select
-                            className="w-full p-2 border rounded-md bg-white dark:bg-gray-800"
+                            className="w-full p-2 border rounded-md bg-background border-border"
                             value={customConfig[field.fieldName] || ''}
                             onChange={(e) => setCustomConfig(prev => ({
                               ...prev,
@@ -701,12 +701,12 @@ export default function ProductDetail() {
                                     ...prev,
                                     [field.fieldName]: e.target.value
                                   }))}
-                                  className="text-orange-500"
+                                  className="text-primary"
                                 />
                                 <span className="text-sm">
                                   {option.label}
                                   {option.priceModifier > 0 && (
-                                    <span className="text-green-600 ml-1">+₹{option.priceModifier}</span>
+                                    <span className="text-primary ml-1">+₹{option.priceModifier}</span>
                                   )}
                                 </span>
                               </label>
@@ -742,12 +742,12 @@ export default function ProductDetail() {
                                       }));
                                     }
                                   }}
-                                  className="text-orange-500"
+                                  className="text-primary"
                                 />
                                 <span className="text-sm">
                                   {option.label}
                                   {option.priceModifier > 0 && (
-                                    <span className="text-green-600 ml-1">+₹{option.priceModifier}</span>
+                                    <span className="text-primary ml-1">+₹{option.priceModifier}</span>
                                   )}
                                 </span>
                               </label>
@@ -763,14 +763,14 @@ export default function ProductDetail() {
                               ...prev,
                               [field.fieldName]: e.target.value
                             }))}
-                            className="bg-white dark:bg-gray-800"
+                            className="bg-background border-border"
                           />
                         )}
                       </div>
                     ))}
                   </div>
                   
-                  <div className="text-sm text-orange-700 dark:text-orange-300 bg-orange-100 dark:bg-orange-900/30 p-3 rounded-md">
+                  <div className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
                     💡 Your customization preferences will be automatically included when you contact us via WhatsApp!
                   </div>
                 </div>

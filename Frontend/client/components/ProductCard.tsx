@@ -122,8 +122,8 @@ export default function ProductCard({ product, showCustomBadge = false }: Produc
               </Badge>
             )}
             {(product.custom || showCustomBadge) && (
-              <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
-                Custom
+              <Badge className="">
+                Customizable
               </Badge>
             )}
           </div>

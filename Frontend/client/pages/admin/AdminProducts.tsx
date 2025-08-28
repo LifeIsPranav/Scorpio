@@ -450,7 +450,7 @@ export default function AdminProducts() {
                           </Badge>
                         )}
                         {product.custom && (
-                          <Badge className="bg-orange-100 text-orange-800 border-orange-200">
+                          <Badge className="bg-muted text-foreground border-border">
                             <span className="w-3 h-3 mr-1">⚙️</span>
                             Custom
                           </Badge>

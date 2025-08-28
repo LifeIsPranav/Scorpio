@@ -708,13 +708,13 @@ export default function ProductFormDialog({
 
           {/* Custom Fields - Only show if custom is checked */}
           {formData.custom && (
-            <div className="space-y-4 border rounded-lg p-4 bg-blue-50 dark:bg-blue-950">
+            <div className="space-y-4 border rounded-lg p-4 bg-muted/30">
               <div className="flex items-center justify-between">
                 <div>
-                  <Label className="text-base font-medium text-blue-900 dark:text-blue-100">
+                  <Label className="text-base font-medium text-foreground">
                     Custom Product Options
                   </Label>
-                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                  <p className="text-sm text-muted-foreground">
                     Add customizable fields that customers can choose from when ordering this product.
                   </p>
                 </div>
@@ -733,7 +733,7 @@ export default function ProductFormDialog({
                     });
                     handleInputChange("customFields", newFields);
                   }}
-                  className="border-blue-200 text-blue-700 hover:bg-blue-100"
+                  className="border-border text-foreground hover:bg-muted"
                 >
                   <Plus className="w-4 h-4 mr-1" />
                   Add Field
@@ -743,7 +743,7 @@ export default function ProductFormDialog({
               {formData.customFields.length > 0 && (
                 <div className="space-y-4">
                   {formData.customFields.map((field, fieldIndex) => (
-                    <div key={fieldIndex} className="border rounded-lg p-4 bg-white dark:bg-gray-900">
+                    <div key={fieldIndex} className="border rounded-lg p-4 bg-card">
                       <div className="flex justify-between items-start mb-3">
                         <Label className="text-sm font-medium">Field {fieldIndex + 1}</Label>
                         <Button
@@ -754,7 +754,7 @@ export default function ProductFormDialog({
                             const newFields = formData.customFields.filter((_, i) => i !== fieldIndex);
                             handleInputChange("customFields", newFields);
                           }}
-                          className="text-red-600 hover:bg-red-50"
+                          className="text-destructive hover:bg-destructive/10"
                         >
                           <X className="w-4 h-4" />
                         </Button>
@@ -907,7 +907,7 @@ export default function ProductFormDialog({
               )}
 
               {formData.customFields.length === 0 && (
-                <p className="text-sm text-blue-600 dark:text-blue-400 text-center py-4">
+                <p className="text-sm text-muted-foreground text-center py-4">
                   No custom fields added. Click "Add Field" to create customizable options for this product.
                 </p>
               )}
