@@ -52,6 +52,14 @@ export default function ProductFormDialog({
     category: "",
     featured: false,
     premium: false,
+    custom: false,
+    customFields: [] as Array<{
+      fieldName: string;
+      fieldType: 'dropdown' | 'radio' | 'checkbox' | 'text';
+      required: boolean;
+      options: Array<{label: string; value: string; priceModifier: number}>;
+      placeholder?: string;
+    }>,
     images: [""],
     whatsappMessage: "",
     keyFeatures: [] as Array<{icon: string, title: string, description: string}>,
@@ -91,6 +99,8 @@ export default function ProductFormDialog({
         category: categoryId,
         featured: product.featured || false,
         premium: product.premium || false,
+        custom: product.custom || false,
+        customFields: product.customFields || [],
         images: product.images && product.images.length > 0 ? product.images : [""],
         whatsappMessage: product.whatsappMessage || "",
         keyFeatures: product.keyFeatures || [],
@@ -117,6 +127,8 @@ export default function ProductFormDialog({
         category: "",
         featured: false,
         premium: false,
+        custom: false,
+        customFields: [],
         images: [""],
         whatsappMessage: "",
         keyFeatures: [],
@@ -291,6 +303,8 @@ export default function ProductFormDialog({
       category: categorySlug,
       featured: formData.featured,
       premium: formData.premium,
+      custom: formData.custom,
+      customFields: formData.customFields,
       images: validatedImages,
       whatsappMessage: formData.whatsappMessage?.trim() || '',
       tags: [],
@@ -652,7 +666,7 @@ export default function ProductFormDialog({
             </div>
           </div>
 
-          {/* Featured and Premium */}
+          {/* Featured, Premium, and Custom */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Checkbox
@@ -678,7 +692,227 @@ export default function ProductFormDialog({
                 Add to premium collection
               </Label>
             </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="custom"
+                checked={formData.custom}
+                onCheckedChange={(checked) =>
+                  handleInputChange("custom", checked)
+                }
+              />
+              <Label htmlFor="custom" className="cursor-pointer">
+                Mark as custom product (with customizable options)
+              </Label>
+            </div>
           </div>
+
+          {/* Custom Fields - Only show if custom is checked */}
+          {formData.custom && (
+            <div className="space-y-4 border rounded-lg p-4 bg-blue-50 dark:bg-blue-950">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-base font-medium text-blue-900 dark:text-blue-100">
+                    Custom Product Options
+                  </Label>
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    Add customizable fields that customers can choose from when ordering this product.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const newFields = [...formData.customFields];
+                    newFields.push({
+                      fieldName: "",
+                      fieldType: "dropdown",
+                      required: false,
+                      options: [{ label: "", value: "", priceModifier: 0 }],
+                      placeholder: ""
+                    });
+                    handleInputChange("customFields", newFields);
+                  }}
+                  className="border-blue-200 text-blue-700 hover:bg-blue-100"
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add Field
+                </Button>
+              </div>
+
+              {formData.customFields.length > 0 && (
+                <div className="space-y-4">
+                  {formData.customFields.map((field, fieldIndex) => (
+                    <div key={fieldIndex} className="border rounded-lg p-4 bg-white dark:bg-gray-900">
+                      <div className="flex justify-between items-start mb-3">
+                        <Label className="text-sm font-medium">Field {fieldIndex + 1}</Label>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const newFields = formData.customFields.filter((_, i) => i !== fieldIndex);
+                            handleInputChange("customFields", newFields);
+                          }}
+                          className="text-red-600 hover:bg-red-50"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                        <div>
+                          <Label className="text-xs">Field Name *</Label>
+                          <Input
+                            value={field.fieldName}
+                            onChange={(e) => {
+                              const newFields = [...formData.customFields];
+                              newFields[fieldIndex] = { ...newFields[fieldIndex], fieldName: e.target.value };
+                              handleInputChange("customFields", newFields);
+                            }}
+                            placeholder="e.g., T-Shirt Size"
+                            className="h-8"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Field Type</Label>
+                          <Select
+                            value={field.fieldType}
+                            onValueChange={(value: 'dropdown' | 'radio' | 'checkbox' | 'text') => {
+                              const newFields = [...formData.customFields];
+                              newFields[fieldIndex] = { ...newFields[fieldIndex], fieldType: value };
+                              handleInputChange("customFields", newFields);
+                            }}
+                          >
+                            <SelectTrigger className="h-8">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="dropdown">Dropdown</SelectItem>
+                              <SelectItem value="radio">Radio Buttons</SelectItem>
+                              <SelectItem value="checkbox">Checkboxes</SelectItem>
+                              <SelectItem value="text">Text Input</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="flex items-center space-x-2 pt-4">
+                          <Checkbox
+                            id={`required-${fieldIndex}`}
+                            checked={field.required}
+                            onCheckedChange={(checked) => {
+                              const newFields = [...formData.customFields];
+                              newFields[fieldIndex] = { ...newFields[fieldIndex], required: !!checked };
+                              handleInputChange("customFields", newFields);
+                            }}
+                          />
+                          <Label htmlFor={`required-${fieldIndex}`} className="text-xs cursor-pointer">
+                            Required
+                          </Label>
+                        </div>
+                      </div>
+
+                      {field.fieldType === 'text' && (
+                        <div>
+                          <Label className="text-xs">Placeholder Text</Label>
+                          <Input
+                            value={field.placeholder || ""}
+                            onChange={(e) => {
+                              const newFields = [...formData.customFields];
+                              newFields[fieldIndex] = { ...newFields[fieldIndex], placeholder: e.target.value };
+                              handleInputChange("customFields", newFields);
+                            }}
+                            placeholder="Enter placeholder text..."
+                            className="h-8"
+                          />
+                        </div>
+                      )}
+
+                      {field.fieldType !== 'text' && (
+                        <div>
+                          <div className="flex justify-between items-center mb-2">
+                            <Label className="text-xs">Options</Label>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const newFields = [...formData.customFields];
+                                newFields[fieldIndex].options.push({ label: "", value: "", priceModifier: 0 });
+                                handleInputChange("customFields", newFields);
+                              }}
+                              className="text-xs h-6 px-2"
+                            >
+                              <Plus className="w-3 h-3 mr-1" />
+                              Add Option
+                            </Button>
+                          </div>
+                          <div className="space-y-2 max-h-32 overflow-y-auto">
+                            {field.options.map((option, optionIndex) => (
+                              <div key={optionIndex} className="flex gap-2 items-center">
+                                <div className="flex-1">
+                                  <Input
+                                    value={option.label}
+                                    onChange={(e) => {
+                                      const newFields = [...formData.customFields];
+                                      newFields[fieldIndex].options[optionIndex] = {
+                                        ...newFields[fieldIndex].options[optionIndex],
+                                        label: e.target.value,
+                                        value: e.target.value.toLowerCase().replace(/\s+/g, '-')
+                                      };
+                                      handleInputChange("customFields", newFields);
+                                    }}
+                                    placeholder="Option label"
+                                    className="h-7 text-xs"
+                                  />
+                                </div>
+                                <div className="w-24">
+                                  <Input
+                                    type="number"
+                                    value={option.priceModifier}
+                                    onChange={(e) => {
+                                      const newFields = [...formData.customFields];
+                                      newFields[fieldIndex].options[optionIndex] = {
+                                        ...newFields[fieldIndex].options[optionIndex],
+                                        priceModifier: parseFloat(e.target.value) || 0
+                                      };
+                                      handleInputChange("customFields", newFields);
+                                    }}
+                                    placeholder="₹0"
+                                    className="h-7 text-xs"
+                                  />
+                                </div>
+                                {field.options.length > 1 && (
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      const newFields = [...formData.customFields];
+                                      newFields[fieldIndex].options = newFields[fieldIndex].options.filter((_, i) => i !== optionIndex);
+                                      handleInputChange("customFields", newFields);
+                                    }}
+                                    className="h-7 w-7 p-0"
+                                  >
+                                    <X className="w-3 h-3" />
+                                  </Button>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {formData.customFields.length === 0 && (
+                <p className="text-sm text-blue-600 dark:text-blue-400 text-center py-4">
+                  No custom fields added. Click "Add Field" to create customizable options for this product.
+                </p>
+              )}
+            </div>
+          )}
 
           <DialogFooter>
             <Button

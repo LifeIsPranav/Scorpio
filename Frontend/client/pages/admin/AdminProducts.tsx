@@ -62,6 +62,7 @@ interface Product {
   category: string;
   featured: boolean;
   premium?: boolean;
+  custom?: boolean;
   tags: string[];
   createdAt: string;
   updatedAt: string;
@@ -76,6 +77,7 @@ interface Category {
 export default function AdminProducts() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedType, setSelectedType] = useState("all"); // all, featured, premium, custom
   const [showProductForm, setShowProductForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -130,7 +132,7 @@ export default function AdminProducts() {
   // Fetch products when pagination parameters change
   useEffect(() => {
     fetchProducts();
-  }, [currentPage, debouncedSearchTerm, selectedCategory]);
+  }, [currentPage, debouncedSearchTerm, selectedCategory, selectedType]);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -139,7 +141,10 @@ export default function AdminProducts() {
         page: currentPage.toString(),
         limit: '10',
         ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
-        ...(selectedCategory !== 'all' && { category: selectedCategory })
+        ...(selectedCategory !== 'all' && { category: selectedCategory }),
+        ...(selectedType === 'featured' && { featured: 'true' }),
+        ...(selectedType === 'premium' && { premium: 'true' }),
+        ...(selectedType === 'custom' && { custom: 'true' })
       };
       
       const response = await adminProductsApi.getAll(params) as any;
@@ -178,6 +183,11 @@ export default function AdminProducts() {
 
   const handleCategoryChange = (value: string) => {
     setSelectedCategory(value);
+    setCurrentPage(1);
+  };
+
+  const handleTypeChange = (value: string) => {
+    setSelectedType(value);
     setCurrentPage(1);
   };  const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -318,6 +328,16 @@ export default function AdminProducts() {
                 </option>
               ))}
             </select>
+            <select
+              value={selectedType}
+              onChange={(e) => handleTypeChange(e.target.value)}
+              className="px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              <option value="all">All Types</option>
+              <option value="featured">Featured</option>
+              <option value="premium">Premium</option>
+              <option value="custom">Custom</option>
+            </select>
           </div>
         </CardContent>
       </Card>
@@ -427,6 +447,12 @@ export default function AdminProducts() {
                           <Badge className="bg-purple-100 text-purple-800 border-purple-200">
                             <Crown className="w-3 h-3 mr-1" />
                             Premium
+                          </Badge>
+                        )}
+                        {product.custom && (
+                          <Badge className="bg-orange-100 text-orange-800 border-orange-200">
+                            <span className="w-3 h-3 mr-1">⚙️</span>
+                            Custom
                           </Badge>
                         )}
                       </div>

@@ -15,14 +15,16 @@ interface Product {
   category: string;
   featured: boolean;
   premium?: boolean;
+  custom?: boolean;
   tags: string[];
 }
 
 interface ProductCardProps {
   product: Product;
+  showCustomBadge?: boolean;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, showCustomBadge = false }: ProductCardProps) {
   const [currentImage, setCurrentImage] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -107,12 +109,24 @@ export default function ProductCard({ product }: ProductCardProps) {
             </Button>
           </div>
 
-          {/* Featured badge */}
-          {product.featured && (
-            <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
-              Featured
-            </Badge>
-          )}
+          {/* Badges */}
+          <div className="absolute top-4 left-4 flex flex-col gap-2">
+            {product.featured && (
+              <Badge className="bg-primary text-primary-foreground">
+                Featured
+              </Badge>
+            )}
+            {product.premium && (
+              <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white">
+                Premium
+              </Badge>
+            )}
+            {(product.custom || showCustomBadge) && (
+              <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
+                Custom
+              </Badge>
+            )}
+          </div>
         </div>
       </Link>
 

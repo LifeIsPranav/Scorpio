@@ -288,7 +288,7 @@ export default function PremiumShowcase() {
 
         {/* Quick Links to All Premium Products */}
         <div className="mt-16 pt-8 border-t border-border">
-          <div className="flex flex-wrap justify-center gap-4">
+          {/* <div className="flex flex-wrap justify-center gap-4">
             {premiumProducts.map((product, index) => (
               <Button
                 key={product._id}
@@ -300,7 +300,7 @@ export default function PremiumShowcase() {
                 <span className="truncate">{product.name}</span>
               </Button>
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

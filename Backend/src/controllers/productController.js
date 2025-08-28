@@ -13,6 +13,7 @@ const getProducts = asyncHandler(async (req, res) => {
     search,
     featured,
     premium,
+    custom,
     sort = 'createdAt',
     order = 'desc'
   } = req.query;
@@ -33,6 +34,11 @@ const getProducts = asyncHandler(async (req, res) => {
   // Filter by premium
   if (premium !== undefined) {
     query.premium = premium === 'true';
+  }
+
+  // Filter by custom
+  if (custom !== undefined) {
+    query.custom = custom === 'true';
   }
 
   // Search functionality
@@ -130,6 +136,8 @@ const createProduct = asyncHandler(async (req, res) => {
     category,
     featured = false,
     premium = false,
+    custom = false,
+    customFields = [],
     whatsappMessage,
     tags = [],
     keyFeatures = [],
@@ -157,6 +165,8 @@ const createProduct = asyncHandler(async (req, res) => {
     category,
     featured,
     premium,
+    custom,
+    customFields,
     whatsappMessage,
     tags,
     keyFeatures,
@@ -302,6 +312,9 @@ const getProductAnalytics = asyncHandler(async (req, res) => {
         premiumProducts: {
           $sum: { $cond: ['$premium', 1, 0] }
         },
+        customProducts: {
+          $sum: { $cond: ['$custom', 1, 0] }
+        },
         averagePrice: { $avg: '$priceNumeric' },
         totalViews: { $sum: '$views' }
       }
@@ -344,6 +357,7 @@ const getProductAnalytics = asyncHandler(async (req, res) => {
         totalProducts: 0,
         featuredProducts: 0,
         premiumProducts: 0,
+        customProducts: 0,
         averagePrice: 0,
         totalViews: 0
       },

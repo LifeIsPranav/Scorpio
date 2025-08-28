@@ -242,10 +242,11 @@ export const productApi = {
  * Public API functions (non-authenticated)
  */
 export const publicApi = {
-  getProducts: (params?: { category?: string; featured?: boolean }) => {
+  getProducts: (params?: { category?: string; featured?: boolean; custom?: boolean }) => {
     const searchParams = new URLSearchParams();
     if (params?.category) searchParams.append('category', params.category);
     if (params?.featured) searchParams.append('featured', 'true');
+    if (params?.custom) searchParams.append('custom', 'true');
     
     const query = searchParams.toString();
     return apiRequest(`/products${query ? `?${query}` : ''}`);
@@ -254,6 +255,10 @@ export const publicApi = {
   getProduct: (slug: string) => apiRequest(`/products/${slug}`),
   getCategory: (slug: string) => apiRequest(`/categories/${slug}`),
   getCategoryProducts: (categorySlug: string) => apiRequest(`/categories/${categorySlug}/products`),
+  getCustomProducts: (limit?: number) => {
+    const query = limit ? `?limit=${limit}` : '';
+    return apiRequest(`/products/custom${query}`);
+  },
 };
 
 export { API_BASE_URL };

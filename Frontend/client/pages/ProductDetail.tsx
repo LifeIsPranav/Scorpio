@@ -39,6 +39,14 @@ interface ApiProduct {
   category: string;
   featured: boolean;
   premium?: boolean;
+  custom?: boolean;
+  customFields?: Array<{
+    fieldName: string;
+    fieldType: 'dropdown' | 'radio' | 'checkbox' | 'text';
+    required: boolean;
+    options: Array<{label: string; value: string; priceModifier: number}>;
+    placeholder?: string;
+  }>;
   whatsappMessage?: string;
   tags: string[];
   keyFeatures?: Array<{
@@ -133,6 +141,10 @@ export default function ProductDetail() {
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewSubmitSuccess, setReviewSubmitSuccess] = useState(false);
 
+  // Custom product configuration state
+  const [customConfig, setCustomConfig] = useState<{[fieldName: string]: any}>({});
+  const [totalPrice, setTotalPrice] = useState(0);
+
   // Icon mapping function
   const getIconComponent = (iconName: string) => {
     const iconMap: { [key: string]: any } = {
@@ -157,6 +169,39 @@ export default function ProductDetail() {
       fetchCategories();
     }
   }, [id]);
+
+  // Calculate total price when custom configuration changes
+  useEffect(() => {
+    if (product) {
+      let basePrice = product.priceNumeric;
+      let additionalPrice = 0;
+
+      if (product.custom && product.customFields) {
+        product.customFields.forEach(field => {
+          const selectedValue = customConfig[field.fieldName];
+          if (selectedValue) {
+            if (field.fieldType === 'checkbox' && Array.isArray(selectedValue)) {
+              // For checkboxes, add price for each selected option
+              selectedValue.forEach(value => {
+                const option = field.options.find(opt => opt.value === value);
+                if (option) {
+                  additionalPrice += option.priceModifier;
+                }
+              });
+            } else {
+              // For dropdown, radio, and text inputs
+              const option = field.options.find(opt => opt.value === selectedValue);
+              if (option) {
+                additionalPrice += option.priceModifier;
+              }
+            }
+          }
+        });
+      }
+
+      setTotalPrice(basePrice + additionalPrice);
+    }
+  }, [product, customConfig]);
 
   const fetchProductBySlug = async (slug: string) => {
     try {
@@ -315,7 +360,33 @@ export default function ProductDetail() {
   // WhatsApp function
     const openWhatsApp = () => {
     const phoneNumber = import.meta.env.VITE_WHATSAPP_PHONE;
-    const message = `Hi! I'm interested in ${product?.name}. Can you provide more information?`;
+    
+    let message = `Hi! I'm interested in ${product?.name}.`;
+    
+    // Add custom configuration if it's a custom product
+    if (product?.custom && Object.keys(customConfig).length > 0) {
+      message += '\n\nMy customization preferences:';
+      
+      product.customFields?.forEach(field => {
+        const selectedValue = customConfig[field.fieldName];
+        if (selectedValue) {
+          if (field.fieldType === 'checkbox' && Array.isArray(selectedValue)) {
+            if (selectedValue.length > 0) {
+              message += `\n• ${field.fieldName}: ${selectedValue.join(', ')}`;
+            }
+          } else if (selectedValue) {
+            message += `\n• ${field.fieldName}: ${selectedValue}`;
+          }
+        }
+      });
+      
+      if (totalPrice !== product.priceNumeric) {
+        message += `\n\nEstimated total price: ₹${totalPrice.toLocaleString('en-IN')}`;
+      }
+    }
+    
+    message += '\n\nCan you provide more information?';
+    
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
   };
@@ -564,8 +635,146 @@ export default function ProductDetail() {
 
               {/* Price */}
               <div className="text-3xl font-bold text-primary">
-                {product.price}
+                {product.custom && totalPrice !== product.priceNumeric ? (
+                  <div className="space-y-2">
+                    <div className="text-lg text-muted-foreground line-through">
+                      {product.price}
+                    </div>
+                    <div className="text-3xl font-bold text-green-600">
+                      ₹{totalPrice.toLocaleString('en-IN')}
+                    </div>
+                  </div>
+                ) : (
+                  product.price
+                )}
               </div>
+
+              {/* Custom Product Configuration */}
+              {product.custom && product.customFields && product.customFields.length > 0 && (
+                <div className="space-y-6 border rounded-lg p-6 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20">
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
+                      Customizable Product
+                    </Badge>
+                    <h3 className="text-lg font-semibold text-orange-900 dark:text-orange-100">
+                      Configure Your Product
+                    </h3>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {product.customFields.map((field, index) => (
+                      <div key={index} className="space-y-2">
+                        <Label className="text-sm font-medium">
+                          {field.fieldName}
+                          {field.required && <span className="text-red-500 ml-1">*</span>}
+                        </Label>
+                        
+                        {field.fieldType === 'dropdown' && (
+                          <select
+                            className="w-full p-2 border rounded-md bg-white dark:bg-gray-800"
+                            value={customConfig[field.fieldName] || ''}
+                            onChange={(e) => setCustomConfig(prev => ({
+                              ...prev,
+                              [field.fieldName]: e.target.value
+                            }))}
+                          >
+                            <option value="">Select {field.fieldName}</option>
+                            {field.options.map((option, optIndex) => (
+                              <option key={optIndex} value={option.value}>
+                                {option.label}
+                                {option.priceModifier > 0 && ` (+₹${option.priceModifier})`}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                        
+                        {field.fieldType === 'radio' && (
+                          <div className="space-y-2">
+                            {field.options.map((option, optIndex) => (
+                              <label key={optIndex} className="flex items-center space-x-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name={field.fieldName}
+                                  value={option.value}
+                                  checked={customConfig[field.fieldName] === option.value}
+                                  onChange={(e) => setCustomConfig(prev => ({
+                                    ...prev,
+                                    [field.fieldName]: e.target.value
+                                  }))}
+                                  className="text-orange-500"
+                                />
+                                <span className="text-sm">
+                                  {option.label}
+                                  {option.priceModifier > 0 && (
+                                    <span className="text-green-600 ml-1">+₹{option.priceModifier}</span>
+                                  )}
+                                </span>
+                              </label>
+                            ))}
+                          </div>
+                        )}
+                        
+                        {field.fieldType === 'checkbox' && (
+                          <div className="space-y-2">
+                            {field.options.map((option, optIndex) => (
+                              <label key={optIndex} className="flex items-center space-x-2 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  value={option.value}
+                                  checked={
+                                    Array.isArray(customConfig[field.fieldName]) &&
+                                    customConfig[field.fieldName].includes(option.value)
+                                  }
+                                  onChange={(e) => {
+                                    const currentValues = Array.isArray(customConfig[field.fieldName]) 
+                                      ? customConfig[field.fieldName] 
+                                      : [];
+                                    
+                                    if (e.target.checked) {
+                                      setCustomConfig(prev => ({
+                                        ...prev,
+                                        [field.fieldName]: [...currentValues, option.value]
+                                      }));
+                                    } else {
+                                      setCustomConfig(prev => ({
+                                        ...prev,
+                                        [field.fieldName]: currentValues.filter(v => v !== option.value)
+                                      }));
+                                    }
+                                  }}
+                                  className="text-orange-500"
+                                />
+                                <span className="text-sm">
+                                  {option.label}
+                                  {option.priceModifier > 0 && (
+                                    <span className="text-green-600 ml-1">+₹{option.priceModifier}</span>
+                                  )}
+                                </span>
+                              </label>
+                            ))}
+                          </div>
+                        )}
+                        
+                        {field.fieldType === 'text' && (
+                          <Input
+                            placeholder={field.placeholder || `Enter ${field.fieldName}`}
+                            value={customConfig[field.fieldName] || ''}
+                            onChange={(e) => setCustomConfig(prev => ({
+                              ...prev,
+                              [field.fieldName]: e.target.value
+                            }))}
+                            className="bg-white dark:bg-gray-800"
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="text-sm text-orange-700 dark:text-orange-300 bg-orange-100 dark:bg-orange-900/30 p-3 rounded-md">
+                    💡 Your customization preferences will be automatically included when you contact us via WhatsApp!
+                  </div>
+                </div>
+              )}
 
 
 
