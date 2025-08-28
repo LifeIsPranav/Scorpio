@@ -55,7 +55,7 @@ app.use('/api/', limiter);
 const corsOptions = {
   origin: process.env.CORS_ORIGIN || 'http://localhost:8080',
   credentials: true,
-  optionSuccessStatus: 200
+  optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
 

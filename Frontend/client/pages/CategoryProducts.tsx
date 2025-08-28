@@ -1,12 +1,39 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import Navigation from "@/components/Navigation";
 import ProductCard from "@/components/ProductCard";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Filter, Grid, List } from "lucide-react";
-import { products, categories } from "@/lib/data";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { publicApi } from "@/lib/api";
+
+interface Category {
+  _id: string;
+  name: string;
+  slug: string;
+  description: string;
+  image: string;
+  productCount: number;
+  isActive: boolean;
+  order: number;
+}
+
+interface Product {
+  _id: string;
+  name: string;
+  slug: string;
+  description: string;
+  price: string;
+  priceNumeric: number;
+  images: string[];
+  category: string;
+  featured: boolean;
+  premium?: boolean;
+  custom?: boolean;
+  tags: string[];
+  whatsappMessage?: string;
+}
 
 export default function CategoryProducts() {
   const { categoryId } = useParams<{ categoryId: string }>();
@@ -15,17 +42,52 @@ export default function CategoryProducts() {
   const [sortBy, setSortBy] = useState<
     "default" | "price-low" | "price-high" | "name"
   >("default");
+  const [category, setCategory] = useState<Category | null>(null);
+  const [categoryProducts, setCategoryProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Find the category
-  const category = categories.find((c) => c.id === categoryId);
+  // Fetch category and products
+  useEffect(() => {
+    const fetchCategoryData = async () => {
+      if (!categoryId) {
+        navigate("/categories");
+        return;
+      }
 
-  // Filter products by category
-  const categoryProducts = products.filter(
-    (product) => product.category === categoryId,
-  );
+      try {
+        setLoading(true);
+        
+        // Fetch all categories to find the one matching the slug
+        const categoriesResponse = await publicApi.getCategories() as any;
+        if (categoriesResponse.success) {
+          const foundCategory = categoriesResponse.data.find((c: Category) => c.slug === categoryId);
+          if (foundCategory) {
+            setCategory(foundCategory);
+            
+            // Fetch products for this category using the specific endpoint
+            const productsResponse = await publicApi.getCategoryProducts(foundCategory.slug) as any;
+            if (productsResponse.success && productsResponse.data) {
+              const products = productsResponse.data.products || [];
+              setCategoryProducts(Array.isArray(products) ? products : []);
+            }
+          } else {
+            console.log(`Category '${categoryId}' not found, redirecting to categories`);
+            navigate("/categories");
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch category data:', error);
+        navigate("/categories");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategoryData();
+  }, [categoryId, navigate]);
 
   // Sort products
-  const sortedProducts = [...categoryProducts].sort((a, b) => {
+  const sortedProducts = Array.isArray(categoryProducts) ? [...categoryProducts].sort((a, b) => {
     switch (sortBy) {
       case "price-low":
         return (
@@ -42,31 +104,9 @@ export default function CategoryProducts() {
       default:
         return 0;
     }
-  });
+  }) : [];
 
-  useEffect(() => {
-    if (!categoryId) {
-      console.log("No categoryId provided, redirecting to categories");
-      navigate("/categories");
-      return;
-    }
-
-    if (!category) {
-      console.log(
-        `Category '${categoryId}' not found, redirecting to categories`,
-      );
-      // Give it a moment to load, then redirect if still not found
-      const timer = setTimeout(() => {
-        if (!categories.find((c) => c.id === categoryId)) {
-          navigate("/categories");
-        }
-      }, 100);
-
-      return () => clearTimeout(timer);
-    }
-  }, [category, categoryId, navigate]);
-
-  if (!categoryId) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p>Loading...</p>
@@ -227,7 +267,7 @@ export default function CategoryProducts() {
               }
             >
               {sortedProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard key={product._id} product={product} />
               ))}
             </div>
           )}
