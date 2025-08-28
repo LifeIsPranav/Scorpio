@@ -31,6 +31,20 @@ const getPremiumProducts = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Get custom products for homepage
+// @route   GET /api/products/custom
+// @access  Public
+const getCustomProducts = asyncHandler(async (req, res) => {
+  const { limit = 10 } = req.query;
+
+  const products = await Product.findCustom(parseInt(limit));
+
+  res.status(200).json({
+    success: true,
+    data: products
+  });
+});
+
 // @desc    Get all products for public view
 // @route   GET /api/products
 // @access  Public
@@ -42,6 +56,7 @@ const getPublicProducts = asyncHandler(async (req, res) => {
     search,
     featured,
     premium,
+    custom,
     sort = 'createdAt',
     order = 'desc',
     minPrice,
@@ -64,6 +79,11 @@ const getPublicProducts = asyncHandler(async (req, res) => {
   // Filter by premium
   if (premium !== undefined) {
     query.premium = premium === 'true';
+  }
+
+  // Filter by custom
+  if (custom !== undefined) {
+    query.custom = custom === 'true';
   }
 
   // Price range filter
@@ -576,6 +596,7 @@ const submitCustomerReview = asyncHandler(async (req, res) => {
 module.exports = {
   getFeaturedProducts,
   getPremiumProducts,
+  getCustomProducts,
   getPublicProducts,
   getPublicProduct,
   getProductsByCategory,

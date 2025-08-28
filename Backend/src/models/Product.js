@@ -65,6 +65,52 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  custom: {
+    type: Boolean,
+    default: false
+  },
+  customFields: [{
+    fieldName: {
+      type: String,
+      required: function() { return this.parent().custom; },
+      trim: true,
+      maxlength: [100, 'Field name cannot exceed 100 characters']
+    },
+    fieldType: {
+      type: String,
+      enum: ['dropdown', 'radio', 'checkbox', 'text'],
+      required: function() { return this.parent().custom; },
+      default: 'dropdown'
+    },
+    required: {
+      type: Boolean,
+      default: false
+    },
+    options: [{
+      label: {
+        type: String,
+        required: true,
+        trim: true,
+        maxlength: [50, 'Option label cannot exceed 50 characters']
+      },
+      value: {
+        type: String,
+        required: true,
+        trim: true,
+        maxlength: [50, 'Option value cannot exceed 50 characters']
+      },
+      priceModifier: {
+        type: Number,
+        default: 0,
+        min: [0, 'Price modifier cannot be negative']
+      }
+    }],
+    placeholder: {
+      type: String,
+      trim: true,
+      maxlength: [100, 'Placeholder cannot exceed 100 characters']
+    }
+  }],
   isActive: {
     type: Boolean,
     default: true
@@ -170,6 +216,7 @@ productSchema.index({ name: 'text', description: 'text', tags: 'text' });
 productSchema.index({ category: 1, isActive: 1 });
 productSchema.index({ featured: 1, isActive: 1 });
 productSchema.index({ premium: 1, isActive: 1 });
+productSchema.index({ custom: 1, isActive: 1 });
 productSchema.index({ slug: 1 });
 productSchema.index({ priceNumeric: 1 });
 productSchema.index({ createdAt: -1 });
@@ -244,6 +291,13 @@ productSchema.statics.findFeatured = function(limit = 10) {
 // Static method to find premium products
 productSchema.statics.findPremium = function(limit = 10) {
   return this.find({ premium: true, isActive: true })
+    .sort({ order: 1, createdAt: -1 })
+    .limit(limit);
+};
+
+// Static method to find custom products
+productSchema.statics.findCustom = function(limit = 10) {
+  return this.find({ custom: true, isActive: true })
     .sort({ order: 1, createdAt: -1 })
     .limit(limit);
 };

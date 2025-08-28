@@ -1,4 +1,5 @@
 import CategoriesSection from "@/components/CategoriesSection";
+import CustomShowcase from "@/components/CustomShowcase";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
 import Navigation from "@/components/Navigation";
@@ -12,6 +13,7 @@ export default function Index() {
       <HeroSection />
       <PremiumShowcase />
       <ProductShowcase isHomepage={true} />
+      <CustomShowcase />
       <CategoriesSection />
       <Footer />
     </div>

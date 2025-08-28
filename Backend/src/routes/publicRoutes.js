@@ -2,6 +2,7 @@ const express = require('express');
 const {
   getFeaturedProducts,
   getPremiumProducts,
+  getCustomProducts,
   getPublicProducts,
   getPublicProduct,
   getProductsByCategory,
@@ -30,6 +31,9 @@ router.get('/products/featured', getFeaturedProducts);
 
 // @route   GET /api/products/premium
 router.get('/products/premium', getPremiumProducts);
+
+// @route   GET /api/products/custom
+router.get('/products/custom', getCustomProducts);
 
 // @route   GET /api/products
 router.get('/products', validatePagination, getPublicProducts);
