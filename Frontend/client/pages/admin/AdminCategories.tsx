@@ -1,4 +1,5 @@
 import CategoryFormDialog from "@/components/admin/CategoryFormDialog";
+import CategoryViewDialog from "@/components/admin/CategoryViewDialog";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -67,6 +68,8 @@ export default function AdminCategories() {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+  const [viewingCategory, setViewingCategory] = useState<Category | null>(null);
+  const [showCategoryView, setShowCategoryView] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -233,7 +236,10 @@ export default function AdminCategories() {
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                     <DropdownMenuItem
-                      onClick={() => console.log("View category:", category._id)}
+                      onClick={() => {
+                        setViewingCategory(category);
+                        setShowCategoryView(true);
+                      }}
                     >
                       <Eye className="mr-2 h-4 w-4" />
                       View
@@ -359,9 +365,10 @@ export default function AdminCategories() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuItem
-                            onClick={() =>
-                              console.log("View category:", category._id)
-                            }
+                            onClick={() => {
+                              setViewingCategory(category);
+                              setShowCategoryView(true);
+                            }}
                           >
                             <Eye className="mr-2 h-4 w-4" />
                             View
@@ -421,6 +428,16 @@ export default function AdminCategories() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Category View Dialog */}
+      <CategoryViewDialog
+        category={viewingCategory}
+        isOpen={showCategoryView}
+        onClose={() => {
+          setShowCategoryView(false);
+          setViewingCategory(null);
+        }}
+      />
     </div>
   );
 }

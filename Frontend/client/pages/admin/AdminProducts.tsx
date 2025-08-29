@@ -1,4 +1,5 @@
 import ProductFormDialog from "@/components/admin/ProductFormDialog";
+import ProductViewDialog from "@/components/admin/ProductViewDialog";
 import { useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -82,6 +83,8 @@ export default function AdminProducts() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [viewingProduct, setViewingProduct] = useState<Product | null>(null);
+  const [showProductView, setShowProductView] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -468,9 +471,10 @@ export default function AdminProducts() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuItem
-                            onClick={() =>
-                              console.log("View product:", product._id)
-                            }
+                            onClick={() => {
+                              setViewingProduct(product);
+                              setShowProductView(true);
+                            }}
                           >
                             <Eye className="mr-2 h-4 w-4" />
                             View
@@ -648,6 +652,16 @@ export default function AdminProducts() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Product View Dialog */}
+      <ProductViewDialog
+        product={viewingProduct}
+        isOpen={showProductView}
+        onClose={() => {
+          setShowProductView(false);
+          setViewingProduct(null);
+        }}
+      />
     </div>
   );
 }
