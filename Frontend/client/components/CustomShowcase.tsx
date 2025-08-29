@@ -109,12 +109,12 @@ export default function CustomShowcase() {
           </div>
 
           {/* Call to Action */}
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center justify-center bg-card rounded-full px-6 py-3 shadow-lg border border-border mb-6">
+          <div className="text-center">
+            {/* <div className="inline-flex items-center justify-center bg-card rounded-full px-6 py-3 shadow-lg border border-border mb-6">
               <span className="text-muted-foreground font-medium">
                 ✨ Need something specific? We've got you covered!
               </span>
-            </div>
+            </div> */}
             <div className="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center">
               <Button
                 asChild
@@ -141,7 +141,7 @@ export default function CustomShowcase() {
           </div>
 
           {/* Features highlight */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center p-6 bg-card/60 rounded-xl backdrop-blur-sm border border-border/50">
               <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🎨</span>
@@ -175,7 +175,7 @@ export default function CustomShowcase() {
                 Fast production and delivery of your custom products with premium quality.
               </p>
             </div>
-          </div>
+          </div> */}
         </div>
       </section>
     </ScrollReveal>

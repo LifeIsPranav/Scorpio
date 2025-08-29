@@ -60,10 +60,10 @@ export default function CategoriesSection() {
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             Shop by <span className="gradient-text">Category</span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          {/* <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Browse our diverse range of product categories, each carefully
             curated to bring you the best selection.
-          </p>
+          </p> */}
         </ScrollReveal>
 
         {/* Categories Grid */}
