@@ -18,7 +18,6 @@ const uploadRoutes = require('./routes/uploadRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const Admin = require('./models/Admin');
-const { initializeDatabase } = require('./utils/seedData');
 
 // Connect to database and initialize
 const initializeApp = async () => {
@@ -26,9 +25,6 @@ const initializeApp = async () => {
   
   // Create default admin user
   await Admin.createDefaultAdmin();
-  
-  // Initialize database with sample data (only if empty)
-  await initializeDatabase();
 };
 
 initializeApp().catch(err => {

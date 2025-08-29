@@ -1,7 +1,6 @@
 require('dotenv').config();
 const connectDB = require('./config/database');
 const Admin = require('./models/Admin');
-const { initializeDatabase } = require('./utils/seedData');
 
 const initializeApp = async () => {
   try {
@@ -12,9 +11,6 @@ const initializeApp = async () => {
 
     // Create default admin user
     await Admin.createDefaultAdmin();
-
-    // Initialize database with sample data
-    await initializeDatabase();
 
     console.log('✅ Application initialization completed successfully');
     console.log('🔐 Default admin credentials:');
