@@ -83,7 +83,7 @@ export default function ProductFormDialog({
 
   useEffect(() => {
     if (product) {
-      // When editing, find category ID from slug
+      // When editing, find the category ID from slug for form consistency
       const categoryFromSlug = categories.find(cat => cat.slug === product.category);
       const categoryId = categoryFromSlug ? categoryFromSlug._id : product.category;
       
@@ -248,7 +248,7 @@ export default function ProductFormDialog({
     const priceNumeric = parseFloat(formData.price.replace(/[^\d.]/g, '')) || 0;
     const formattedPrice = `₹${priceNumeric.toLocaleString('en-IN')}`;
     
-    // Find category slug by ID
+    // Find category slug by ID 
     const selectedCategory = categories.find(cat => cat._id === formData.category);
     const categorySlug = selectedCategory ? selectedCategory.slug : formData.category;
 
@@ -304,7 +304,7 @@ export default function ProductFormDialog({
       featured: formData.featured,
       premium: formData.premium,
       custom: formData.custom,
-      customFields: formData.customFields,
+      customFields: formData.custom ? formData.customFields : [], // Only include customFields if custom is true
       images: validatedImages,
       whatsappMessage: formData.whatsappMessage?.trim() || '',
       tags: [],

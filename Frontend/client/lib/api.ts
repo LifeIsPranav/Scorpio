@@ -22,7 +22,18 @@ async function apiRequest<T>(
   });
 
   if (!response.ok) {
-    throw new Error(`API request failed: ${response.statusText}`);
+    const errorData = await response.json().catch(() => ({}));
+    const errorMessage = errorData.error || errorData.message || response.statusText;
+    const errorDetails = errorData.details || [];
+    
+    // Create a more detailed error message
+    let detailedMessage = `API request failed: ${errorMessage}`;
+    if (errorDetails.length > 0) {
+      const fieldErrors = errorDetails.map((detail: any) => `${detail.field}: ${detail.message}`).join(', ');
+      detailedMessage += ` (${fieldErrors})`;
+    }
+    
+    throw new Error(detailedMessage);
   }
 
   return response.json();

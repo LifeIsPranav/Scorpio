@@ -72,14 +72,14 @@ const productSchema = new mongoose.Schema({
   customFields: [{
     fieldName: {
       type: String,
-      required: function() { return this.parent().custom; },
+      required: false, // Remove the dynamic requirement for now
       trim: true,
       maxlength: [100, 'Field name cannot exceed 100 characters']
     },
     fieldType: {
       type: String,
       enum: ['dropdown', 'radio', 'checkbox', 'text'],
-      required: function() { return this.parent().custom; },
+      required: false, // Remove the dynamic requirement for now  
       default: 'dropdown'
     },
     required: {
@@ -317,5 +317,31 @@ productSchema.methods.incrementViews = function() {
   this.views += 1;
   return this.save();
 };
+
+// Pre-save validation for custom fields
+productSchema.pre('save', function(next) {
+  // If this is a custom product, validate that required custom fields are present
+  if (this.custom && this.customFields.length > 0) {
+    for (let field of this.customFields) {
+      if (!field.fieldName || !field.fieldType) {
+        return next(new Error('Custom fields must have fieldName and fieldType when product is marked as custom'));
+      }
+    }
+  }
+  next();
+});
+
+// Pre-validate for updates
+productSchema.pre('findOneAndUpdate', function(next) {
+  const update = this.getUpdate();
+  if (update.custom && update.customFields && update.customFields.length > 0) {
+    for (let field of update.customFields) {
+      if (!field.fieldName || !field.fieldType) {
+        return next(new Error('Custom fields must have fieldName and fieldType when product is marked as custom'));
+      }
+    }
+  }
+  next();
+});
 
 module.exports = mongoose.model('Product', productSchema);

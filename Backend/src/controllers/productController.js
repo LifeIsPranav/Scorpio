@@ -146,7 +146,21 @@ const createProduct = asyncHandler(async (req, res) => {
   } = req.body;
 
   // Check if category exists
-  const categoryExists = await Category.findOne({ slug: category });
+  let categoryExists;
+  let categorySlug = category;
+  
+  // Check if category is provided as ID or slug
+  if (category.length === 24) {
+    // Likely an ObjectId
+    categoryExists = await Category.findById(category);
+    if (categoryExists) {
+      categorySlug = categoryExists.slug;
+    }
+  } else {
+    // Assume it's a slug
+    categoryExists = await Category.findOne({ slug: category });
+  }
+  
   if (!categoryExists) {
     return res.status(400).json({
       success: false,
@@ -162,7 +176,7 @@ const createProduct = asyncHandler(async (req, res) => {
     price,
     priceNumeric,
     images,
-    category,
+    category: categorySlug,
     featured,
     premium,
     custom,
@@ -196,7 +210,21 @@ const updateProduct = asyncHandler(async (req, res) => {
 
   // If category is being updated, check if it exists
   if (req.body.category) {
-    const categoryExists = await Category.findOne({ slug: req.body.category });
+    let categoryExists;
+    
+    // Check if category is provided as ID or slug
+    if (req.body.category.length === 24) {
+      // Likely an ObjectId
+      categoryExists = await Category.findById(req.body.category);
+      if (categoryExists) {
+        // Convert ID to slug for storage
+        req.body.category = categoryExists.slug;
+      }
+    } else {
+      // Assume it's a slug
+      categoryExists = await Category.findOne({ slug: req.body.category });
+    }
+    
     if (!categoryExists) {
       return res.status(400).json({
         success: false,

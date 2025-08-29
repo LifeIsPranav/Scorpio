@@ -10,6 +10,8 @@ const handleValidationErrors = (req, res, next) => {
       value: error.value
     }));
 
+    console.log('Validation failed:', errorMessages); // Add logging for debugging
+
     return res.status(400).json({
       success: false,
       error: 'Validation failed',
@@ -118,7 +120,20 @@ const validateProductUpdate = [
   
   body('images.*')
     .optional()
-    .isURL()
+    .custom((value) => {
+      // More flexible URL validation
+      if (typeof value !== 'string') return false;
+      
+      // Check if it's a valid URL format
+      try {
+        new URL(value);
+        return true;
+      } catch {
+        // If URL constructor fails, check if it matches common image URL patterns
+        return /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp|svg)$/i.test(value) ||
+               /^https?:\/\/.+/i.test(value);
+      }
+    })
     .withMessage('Each image must be a valid URL'),
   
   body('featured')
