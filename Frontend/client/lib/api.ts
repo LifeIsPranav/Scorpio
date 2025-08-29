@@ -223,6 +223,48 @@ export const adminReviewsApi = {
 };
 
 /**
+ * Analytics API functions
+ */
+export const analyticsApi = {
+  getDashboard: (period?: string) => {
+    const query = period ? `?period=${period}` : '';
+    return authenticatedRequest(`/admin/analytics${query}`);
+  },
+  getSales: (period?: string) => {
+    const query = period ? `?period=${period}` : '';
+    return authenticatedRequest(`/admin/analytics/sales${query}`);
+  },
+  getCustomers: (period?: string) => {
+    const query = period ? `?period=${period}` : '';
+    return authenticatedRequest(`/admin/analytics/customers${query}`);
+  },
+};
+
+/**
+ * Settings API functions
+ */
+export const settingsApi = {
+  getAll: () => authenticatedRequest('/admin/settings'),
+  update: (section: string, settings: any) => 
+    authenticatedRequest('/admin/settings', {
+      method: 'PUT',
+      body: JSON.stringify({ section, settings }),
+    }),
+  reset: (section: string) => 
+    authenticatedRequest('/admin/settings/reset', {
+      method: 'POST',
+      body: JSON.stringify({ section }),
+    }),
+  backup: () => authenticatedRequest('/admin/settings/backup'),
+  restore: (backup: any) => 
+    authenticatedRequest('/admin/settings/restore', {
+      method: 'POST',
+      body: JSON.stringify({ backup }),
+    }),
+  getSystemInfo: () => authenticatedRequest('/admin/settings/system'),
+};
+
+/**
  * Category API functions
  */
 export const categoryApi = {

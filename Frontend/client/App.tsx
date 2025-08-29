@@ -1,5 +1,6 @@
 import "./global.css";
 import About from "./pages/About";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminCategories from "./pages/admin/AdminCategories";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminLayout from "./components/admin/AdminLayout";
@@ -7,6 +8,7 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminReviews from "./pages/admin/AdminReviews";
+import AdminSettings from "./pages/admin/AdminSettings";
 import Careers from "./pages/Careers";
 import Categories from "./pages/Categories";
 import CategoryProducts from "./pages/CategoryProducts";
@@ -115,12 +117,7 @@ const App = () => (
               element={
                 <ProtectedAdminRoute>
                   <AdminLayout>
-                    <div className="p-8 text-center">
-                      <h2 className="text-2xl font-bold mb-4">Analytics</h2>
-                      <p className="text-muted-foreground">
-                        Analytics dashboard coming soon...
-                      </p>
-                    </div>
+                    <AdminAnalytics />
                   </AdminLayout>
                 </ProtectedAdminRoute>
               }
@@ -130,12 +127,7 @@ const App = () => (
               element={
                 <ProtectedAdminRoute>
                   <AdminLayout>
-                    <div className="p-8 text-center">
-                      <h2 className="text-2xl font-bold mb-4">Settings</h2>
-                      <p className="text-muted-foreground">
-                        Settings management coming soon...
-                      </p>
-                    </div>
+                    <AdminSettings />
                   </AdminLayout>
                 </ProtectedAdminRoute>
               }

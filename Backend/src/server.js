@@ -17,6 +17,8 @@ const publicRoutes = require('./routes/publicRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
 const Admin = require('./models/Admin');
 
 // Connect to database and initialize
@@ -88,6 +90,8 @@ app.use('/api/admin/products', productRoutes);
 app.use('/api/admin/categories', categoryRoutes);
 app.use('/api/admin/orders', orderRoutes);
 app.use('/api/admin/reviews', reviewRoutes);
+app.use('/api/admin/analytics', analyticsRoutes);
+app.use('/api/admin/settings', settingsRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api', publicRoutes);
 
