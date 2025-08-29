@@ -1,10 +1,10 @@
 import ProductCard from "./ProductCard";
+import ScrollReveal from "./ScrollReveal";
 import { ArrowRight, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { publicApi } from "@/lib/api";
-import ScrollReveal from "./ScrollReveal";
 
 interface Product {
   _id: string;
@@ -84,10 +84,10 @@ export default function CustomShowcase() {
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
               Custom <span className="gradient-text">Products</span>
             </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            {/* <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Create something unique with our customizable products. Choose your preferences, 
               specifications, and let us craft the perfect solution for you.
-            </p>
+            </p> */}
           </div>
 
           {/* Products Grid */}

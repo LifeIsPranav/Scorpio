@@ -280,9 +280,10 @@ export default function EnhancedProductShowcase({ isHomepage = false }: ProductS
             {isHomepage ? "Our Products" : "All Products"}
           </h2>
           {isHomepage ? (
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Discover our curated collection of premium products, carefully selected to meet your needs and exceed your expectations.
-            </p>
+            // <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            //   Discover our curated collection of premium products, carefully selected to meet your needs and exceed your expectations.
+            // </p>
+            <p></p>
           ) : (
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Discover our complete collection of premium products

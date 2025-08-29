@@ -113,10 +113,10 @@ export default function PremiumShowcase() {
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             Premium <span className="gradient-text">Collection</span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          {/* <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Discover our handpicked selection of premium products, carefully
             curated for those who appreciate quality and excellence.
-          </p>
+          </p> */}
         </ScrollReveal>
 
         {/* Main Showcase */}
