@@ -78,8 +78,14 @@ categorySchema.pre('save', function(next) {
   next();
 });
 
-// Static method to find by name or slug
+// Static method to find by ObjectId, name or slug
 categorySchema.statics.findByIdentifier = function(identifier) {
+  // Check if identifier is a valid ObjectId
+  if (mongoose.Types.ObjectId.isValid(identifier)) {
+    return this.findById(identifier);
+  }
+  
+  // Otherwise search by slug or name
   return this.findOne({
     $or: [
       { slug: identifier },
