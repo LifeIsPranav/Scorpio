@@ -44,7 +44,7 @@ const CategoryViewDialog = ({ category, isOpen, onClose }: CategoryViewDialogPro
             <Card>
               <CardContent className="p-4">
                 <img
-                  src={category.image || "/placeholder.svg"}
+                  src={category.image || "/no-image.svg"}
                   alt={category.name}
                   className="w-full h-48 object-cover rounded-lg"
                 />
@@ -125,7 +125,7 @@ const CategoryViewDialog = ({ category, isOpen, onClose }: CategoryViewDialogPro
                       className="max-w-full h-auto max-h-32 object-contain rounded"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = "/placeholder.svg";
+                        target.src = "/no-image.svg";
                       }}
                     />
                   </div>

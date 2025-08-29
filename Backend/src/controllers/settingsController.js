@@ -18,7 +18,7 @@ let websiteSettings = {
     maintenance: false
   },
   appearance: {
-    logo: '/placeholder.svg',
+    logo: '/no-image.svg',
     favicon: '/favicon.ico',
     primaryColor: '#000000',
     secondaryColor: '#666666',

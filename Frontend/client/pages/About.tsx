@@ -1,7 +1,7 @@
-import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import Navigation from "@/components/Navigation";
+import { Heart, MessageCircle, Shield, Star, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Star, Users, Shield, Heart } from "lucide-react";
 
 export default function About() {
   const openWhatsApp = () => {
@@ -41,8 +41,8 @@ export default function About() {
               </p>
               <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
                 Through direct WhatsApp communication, we provide personalized
-                service that traditional e-commerce can't match. No automated
-                responses, no impersonal transactions – just genuine human
+                service that traditional e-commerce can't match. Every interaction
+                is handled by our dedicated team – just genuine human
                 connection.
               </p>
               <Button

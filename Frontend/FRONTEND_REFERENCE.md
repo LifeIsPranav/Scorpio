@@ -516,7 +516,7 @@ const categoryValidation = {
 
 ### Product Rules
 
-- **Unique IDs**: System-generated unique identifiers
+- **Unique IDs**: System-managed unique identifiers
 - **Price Format**: Must include currency symbol (₹)
 - **Image Requirements**: At least 1 image, maximum 10 images
 - **Category Assignment**: Must belong to existing category
@@ -581,7 +581,7 @@ const categoryValidation = {
 - **CDN**: Image and asset delivery optimization
 - **SSL**: HTTPS certificate for secure communications
 - **Monitoring**: Error tracking, performance monitoring
-- **Backup**: Automated database backups
+- **Backup**: Regular database backups
 
 ### Environment Variables
 
@@ -628,7 +628,7 @@ CORS_ORIGIN=
 - **CORS Configuration**: Restrict cross-origin requests
 - **Admin IP Restriction**: Optional IP whitelisting
 - **Audit Logging**: Track all admin actions
-- **Data Backup**: Regular automated backups
+- **Data Backup**: Regular scheduled backups
 - **GDPR Compliance**: Data protection compliance (future)
 
 ## Implementation Priority

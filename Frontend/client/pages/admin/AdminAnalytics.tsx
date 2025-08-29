@@ -363,7 +363,7 @@ export default function AdminAnalytics() {
                       {analyticsData.tables.topProducts.slice(0, 5).map((product) => (
                         <div key={product._id} className="flex items-center space-x-4">
                           <img
-                            src={product.images || '/placeholder.svg'}
+                            src={product.images || '/no-image.svg'}
                             alt={product.name}
                             className="h-10 w-10 rounded object-cover"
                           />

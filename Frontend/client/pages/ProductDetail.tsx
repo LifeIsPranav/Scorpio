@@ -618,7 +618,7 @@ export default function ProductDetail() {
                 {product.name}
               </h1>
 
-              {/* Rating (placeholder for future) */}
+              {/* Product Rating */}
               <div className="flex items-center gap-2">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (

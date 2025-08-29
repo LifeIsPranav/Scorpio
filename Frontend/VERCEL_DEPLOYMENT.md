@@ -43,7 +43,7 @@ Frontend/
 ├── vite.config.ts       # Main Vite config (for SPA)
 ├── vite.config.server.ts # Server config (not used in Vercel)
 ├── package.json         # Build scripts
-└── dist/spa/           # Build output (auto-generated)
+└── dist/spa/           # Build output (created during build)
 ```
 
 ## Build Commands

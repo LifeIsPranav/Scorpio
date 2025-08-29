@@ -50,7 +50,7 @@ const ProductViewDialog = ({ product, isOpen, onClose }: ProductViewDialogProps)
             <Card>
               <CardContent className="p-4">
                 <img
-                  src={product.images?.[0] || "/placeholder.svg"}
+                  src={product.images?.[0] || "/no-image.svg"}
                   alt={product.name}
                   className="w-full h-64 object-cover rounded-lg"
                 />

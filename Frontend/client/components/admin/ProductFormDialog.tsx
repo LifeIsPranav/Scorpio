@@ -596,7 +596,7 @@ export default function ProductFormDialog({
                   <Label htmlFor="sku" className="text-xs">SKU</Label>
                   <Input
                     id="sku"
-                    placeholder="Auto-generated if empty"
+                    placeholder="Leave empty to use product name"
                     value={formData.specifications.general.sku}
                     onChange={(e) => handleInputChange("specifications.general.sku", e.target.value)}
                   />

@@ -61,9 +61,9 @@ const generateSlugs = async () => {
       await category.save(); // This will trigger the pre-save middleware to generate slug
     }
 
-    console.log('✅ Slugs generated successfully');
+    console.log('✅ Slugs created successfully');
   } catch (error) {
-    console.error('❌ Failed to generate slugs:', error.message);
+    console.error('❌ Failed to create slugs:', error.message);
     throw error;
   }
 };
