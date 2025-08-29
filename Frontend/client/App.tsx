@@ -18,6 +18,7 @@ import ProductDetail from "./pages/ProductDetail";
 import Products from "./pages/Products";
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
 import Returns from "./pages/Returns";
+import Search from "./pages/Search";
 import ShippingInfo from "./pages/ShippingInfo";
 import SizeGuide from "./pages/SizeGuide";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/products" element={<Products />} />
             <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/search" element={<Search />} />
             <Route path="/categories" element={<Categories />} />
             <Route
               path="/category/:categoryId"

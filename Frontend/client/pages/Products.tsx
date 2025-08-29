@@ -1,6 +1,6 @@
+import EnhancedProductShowcase from "@/components/EnhancedProductShowcase";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
-import ProductShowcase from "@/components/ProductShowcase";
 import { ArrowUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,7 @@ export default function Products() {
     <div className="min-h-screen">
       <Navigation />
       <div className="pt-16">
-        <ProductShowcase isHomepage={false} />
+        <EnhancedProductShowcase isHomepage={false} />
       </div>
       <Footer />
       

@@ -259,6 +259,12 @@ export const publicApi = {
     const query = limit ? `?limit=${limit}` : '';
     return apiRequest(`/products/custom${query}`);
   },
+  searchProducts: (query: string, limit?: number) => {
+    const searchParams = new URLSearchParams();
+    searchParams.append('q', query);
+    if (limit) searchParams.append('limit', limit.toString());
+    return apiRequest(`/search?${searchParams.toString()}`);
+  },
 };
 
 export { API_BASE_URL };

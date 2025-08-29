@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Menu, X, ShoppingBag, MessageCircle } from "lucide-react";
+import SearchBar from "./SearchBar";
+import { Menu, MessageCircle, Search, ShoppingBag, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,26 +37,50 @@ export default function Navigation() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.href}
-                className="text-foreground/70 hover:text-foreground transition-colors duration-200 font-medium"
-              >
-                {item.name}
+          <div className="hidden md:flex items-center space-x-4">
+            {/* Search Bar */}
+            <div className="hidden lg:block">
+              <SearchBar
+                placeholder="Search..."
+                className="w-64"
+              />
+            </div>
+            
+            {/* Navigation Links */}
+            <div className="flex items-center space-x-6">
+              {navItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className="text-foreground/70 hover:text-foreground transition-colors duration-200 font-medium"
+                >
+                  {item.name}
+                </Link>
+              ))}
+              <Link to="/contact">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="border-primary/20 hover:bg-primary/10 hover:border-primary/40 rounded-full"
+                  title="Contact Us"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                </Button>
               </Link>
-            ))}
-            <Link to="/contact">
-              <Button
-                variant="outline"
-                size="icon"
-                className="border-primary/20 hover:bg-primary/10 hover:border-primary/40 rounded-full"
-                title="Contact Us"
-              >
-                <MessageCircle className="w-4 h-4" />
-              </Button>
-            </Link>
+              {/* Mobile search button */}
+              <div className="lg:hidden">
+                <Link to="/search">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="border-primary/20 hover:bg-primary/10 hover:border-primary/40 rounded-full"
+                    title="Search"
+                  >
+                    <Search className="w-4 h-4" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
 
           {/* Mobile menu button */}
@@ -79,6 +104,14 @@ export default function Navigation() {
         {isOpen && (
           <div className="md:hidden animate-fade-in">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-white/95 backdrop-blur-md rounded-lg mt-2 shadow-lg">
+              {/* Mobile Search */}
+              <div className="px-3 py-2">
+                <SearchBar
+                  placeholder="Search..."
+                  className="w-full"
+                />
+              </div>
+              
               {navItems.map((item) => (
                 <Link
                   key={item.name}
