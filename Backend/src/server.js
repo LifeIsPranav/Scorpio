@@ -53,10 +53,10 @@ app.use('/api/', limiter);
 const corsOptions = {
   origin: process.env.CORS_ORIGIN 
     ? process.env.CORS_ORIGIN.split(',').map(url => url.trim())
-    : ['http://localhost:8080'],
+    : ['http://localhost:8080', 'http://localhost:8081'],
   credentials: true,
   optionsSuccessStatus: 200,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 };
 app.use(cors(corsOptions));

@@ -80,9 +80,9 @@ exports.createOrder = async (req, res) => {
           message: `Product not found: ${item.productId}`
         });
       }
-      calculatedTotal += product.price * item.quantity;
+      calculatedTotal += product.priceNumeric * item.quantity;
       item.name = product.name;
-      item.price = product.price;
+      item.price = product.priceNumeric;
     }
 
     orderData.totalAmount = calculatedTotal;
@@ -125,9 +125,9 @@ exports.updateOrder = async (req, res) => {
             message: `Product not found: ${item.productId}`
           });
         }
-        calculatedTotal += product.price * item.quantity;
+        calculatedTotal += product.priceNumeric * item.quantity;
         item.name = product.name;
-        item.price = product.price;
+        item.price = product.priceNumeric;
       }
       updateData.totalAmount = calculatedTotal;
     }
@@ -192,6 +192,15 @@ exports.updateOrderStatus = async (req, res) => {
     const { id } = req.params;
     const { status, trackingNumber, estimatedDelivery } = req.body;
 
+    // Validate status
+    const validStatuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid status provided'
+      });
+    }
+
     const updateData = { status };
     if (trackingNumber) updateData.trackingNumber = trackingNumber;
     if (estimatedDelivery) updateData.estimatedDelivery = estimatedDelivery;
@@ -199,6 +208,11 @@ exports.updateOrderStatus = async (req, res) => {
     // If status is delivered, set actual delivery date
     if (status === 'delivered') {
       updateData.actualDelivery = new Date();
+    }
+
+    // If status is shipped, set shipping date if not already set
+    if (status === 'shipped' && !updateData.trackingNumber) {
+      updateData.shippedAt = new Date();
     }
 
     const order = await Order.findByIdAndUpdate(
@@ -214,10 +228,12 @@ exports.updateOrderStatus = async (req, res) => {
       });
     }
 
+    console.log(`Order ${order.orderNumber} status updated to: ${status}`);
+
     res.json({
       success: true,
       data: order,
-      message: 'Order status updated successfully'
+      message: `Order status updated to ${status} successfully`
     });
   } catch (error) {
     console.error('Update order status error:', error);
