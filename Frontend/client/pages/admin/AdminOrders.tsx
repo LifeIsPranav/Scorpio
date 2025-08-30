@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/hooks/use-toast";
 import { adminOrdersApi } from "@/lib/api";
 
 import {
@@ -156,16 +157,34 @@ export default function AdminOrders() {
 
   const handleStatusUpdate = async (orderId: string, status: string, trackingNumber?: string) => {
     try {
+      console.log(`Updating order ${orderId} to status: ${status}`);
+      
       const data: any = { status };
       if (trackingNumber) data.trackingNumber = trackingNumber;
       
       const response = await adminOrdersApi.updateStatus(orderId, data) as any;
+      
+      console.log('Status update response:', response);
+      
       if (response.success) {
+        // Show success message
+        toast({
+          title: "Status Updated",
+          description: `Order status updated to ${status} successfully`,
+        });
+        
         await fetchOrders();
         await fetchStats();
+      } else {
+        throw new Error(response.message || 'Failed to update status');
       }
     } catch (err) {
       console.error('Error updating order status:', err);
+      toast({
+        title: "Error",
+        description: "Failed to update order status",
+        variant: "destructive",
+      });
     }
   };
 
@@ -175,6 +194,10 @@ export default function AdminOrders() {
     try {
       const response = await adminOrdersApi.delete(orderToDelete._id) as any;
       if (response.success) {
+        toast({
+          title: "Order Deleted",
+          description: `Order ${orderToDelete.orderNumber} has been deleted successfully`,
+        });
         await fetchOrders();
         await fetchStats();
         setDeleteDialogOpen(false);
@@ -182,6 +205,11 @@ export default function AdminOrders() {
       }
     } catch (err) {
       console.error('Error deleting order:', err);
+      toast({
+        title: "Error",
+        description: "Failed to delete order",
+        variant: "destructive",
+      });
     }
   };
 
@@ -372,21 +400,33 @@ export default function AdminOrders() {
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem 
-                            onClick={() => handleStatusUpdate(order._id, 'confirmed')}
+                            onClick={() => {
+                              console.log('Confirming order:', order._id);
+                              handleStatusUpdate(order._id, 'confirmed');
+                            }}
                             disabled={order.status !== 'pending'}
                           >
+                            <CheckCircle className="mr-2 h-4 w-4" />
                             Confirm Order
                           </DropdownMenuItem>
                           <DropdownMenuItem 
-                            onClick={() => handleStatusUpdate(order._id, 'shipped')}
+                            onClick={() => {
+                              console.log('Shipping order:', order._id);
+                              handleStatusUpdate(order._id, 'shipped');
+                            }}
                             disabled={!['confirmed', 'processing'].includes(order.status)}
                           >
+                            <Truck className="mr-2 h-4 w-4" />
                             Mark as Shipped
                           </DropdownMenuItem>
                           <DropdownMenuItem 
-                            onClick={() => handleStatusUpdate(order._id, 'delivered')}
+                            onClick={() => {
+                              console.log('Delivering order:', order._id);
+                              handleStatusUpdate(order._id, 'delivered');
+                            }}
                             disabled={order.status !== 'shipped'}
                           >
+                            <Package className="mr-2 h-4 w-4" />
                             Mark as Delivered
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
