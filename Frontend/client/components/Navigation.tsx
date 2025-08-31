@@ -33,7 +33,7 @@ export default function Navigation() {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <img 
-              src="/logo.png" 
+              src="./logo.png" 
               alt="Scorpio Logo" 
               className="h-9 object-contain" 
             />

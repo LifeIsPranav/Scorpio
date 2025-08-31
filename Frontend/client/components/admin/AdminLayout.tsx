@@ -115,7 +115,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center space-x-2">
               <img 
-                src="/logo.png" 
+                src="./logo.png" 
                 alt="Scorpio Logo" 
                 className="w-8 h-8 object-contain" 
               />
