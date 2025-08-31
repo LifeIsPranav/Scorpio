@@ -53,9 +53,13 @@ export default function AdminLogin() {
           <CardHeader className="text-center space-y-4">
             <div className="mx-auto w-16 h-16 flex items-center justify-center">
               <img 
-                src="./logo.png" 
+                src="/logo.png" 
                 alt="Scorpio Logo" 
                 className="w-16 h-16 object-contain" 
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                }}
               />
             </div>
             <div>

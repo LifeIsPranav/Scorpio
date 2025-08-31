@@ -47,9 +47,13 @@ export default function Footer() {
             <div className="lg:col-span-2">
               <div className="flex items-center space-x-2 mb-6">
                 <img 
-                  src="./logo.png" 
+                  src="/logo.png" 
                   alt="Scorpio Logo" 
                   className="h-8 w-8 object-contain" 
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
                 />
                 <span className="text-2xl font-bold text-primary">Scorpio</span>
               </div>
