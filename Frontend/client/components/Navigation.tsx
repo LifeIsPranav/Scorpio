@@ -1,5 +1,5 @@
 import SearchBar from "./SearchBar";
-import { Menu, MessageCircle, Search, ShoppingBag, X } from "lucide-react";
+import { Menu, MessageCircle, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,11 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <ShoppingBag className="h-8 w-8 text-primary" />
+            <img 
+              src="/logo.png" 
+              alt="Scorpio Logo" 
+              className="h-9 object-contain" 
+            />
             <span className="text-xl font-bold text-primary">Scorpio</span>
           </Link>
 

@@ -114,12 +114,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           {/* Sidebar header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center">
-                <Store className="w-5 h-5 text-white dark:text-gray-900" />
-              </div>
+              <img 
+                src="/logo.png" 
+                alt="Scorpio Logo" 
+                className="w-8 h-8 object-contain" 
+              />
               <div>
                 <h1 className="text-lg font-bold text-gray-900 dark:text-white">
-                  Admin Panel
+                  Scorpio Admin
                 </h1>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   Store Management

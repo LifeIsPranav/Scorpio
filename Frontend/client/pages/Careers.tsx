@@ -1,7 +1,20 @@
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
-import { Globe, Heart, MessageCircle, Trophy, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+import { 
+  Globe, 
+  Heart, 
+  MessageCircle, 
+  Trophy, 
+  Users, 
+  GraduationCap,
+  Building,
+  Shirt,
+  Target,
+  Award,
+  Zap
+} from "lucide-react";
 
 export default function Careers() {
   const openWhatsApp = () => {
@@ -14,51 +27,77 @@ export default function Careers() {
   const benefits = [
     {
       icon: Users,
-      title: "Great Team",
+      title: "Innovation-Driven Team",
       description:
-        "Work with passionate and talented individuals who share your vision.",
+        "Work with passionate individuals from IIT ecosystem who are building the future of professional clothing.",
     },
     {
-      icon: Globe,
-      title: "Remote Friendly",
+      icon: GraduationCap,
+      title: "Campus Connect",
       description:
-        "Flexible work arrangements with opportunities for remote work.",
+        "Be part of a movement that directly impacts students across IITs and leading colleges in India.",
     },
     {
       icon: Heart,
-      title: "Work-Life Balance",
+      title: "Purpose-Driven Work",
       description:
-        "We believe in maintaining a healthy balance between work and personal life.",
+        "Help students, professionals, and institutions make their first impression count through quality clothing.",
     },
     {
       icon: Trophy,
-      title: "Growth Opportunities",
+      title: "Growth & Impact",
       description:
-        "Continuous learning and development opportunities to advance your career.",
+        "Scale a brand that's backed by IITNxt and recognized across educational institutions and corporates.",
+    },
+    {
+      icon: Globe,
+      title: "Flexible Environment",
+      description:
+        "Remote-friendly culture with opportunities to engage directly with college campuses and corporate clients.",
+    },
+    {
+      icon: Zap,
+      title: "Sustainability Focus",
+      description:
+        "Contribute to sustainable fashion practices while building a profitable and impactful business.",
     },
   ];
 
   const openPositions = [
     {
-      title: "Customer Success Manager",
+      title: "Campus Relations Manager",
       type: "Full-time",
-      location: "Remote",
+      location: "On-field + Remote",
       description:
-        "Help our customers succeed by providing exceptional support and building relationships.",
+        "Build relationships with IITs and colleges, organize SuitUp campus programs, and drive student engagement.",
     },
     {
-      title: "Product Curator",
-      type: "Part-time",
+      title: "Product Design Specialist",
+      type: "Full-time",
       location: "Hybrid",
       description:
-        "Research and select premium products that align with our brand values.",
+        "Design formal wear, uniforms, and professional kits that meet the needs of students and corporates.",
     },
     {
-      title: "Social Media Specialist",
+      title: "Business Development Executive",
+      type: "Full-time",
+      location: "Remote + Travel",
+      description:
+        "Expand Scorpio's reach to new institutions, companies, and enterprise clients across India.",
+    },
+    {
+      title: "Digital Marketing Specialist",
       type: "Contract",
       location: "Remote",
       description:
-        "Create engaging content and manage our social media presence across platforms.",
+        "Create compelling campaigns for youth-focused initiatives like SuitUp and build brand presence across digital platforms.",
+    },
+    {
+      title: "Operations Coordinator",
+      type: "Full-time",
+      location: "Hybrid",
+      description:
+        "Manage supply chain, quality control, and logistics for custom uniforms and professional wear orders.",
     },
   ];
 
@@ -70,29 +109,77 @@ export default function Careers() {
       <section className="pt-24 pb-16 bg-gradient-to-b from-muted/30 to-background">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            Join Our <span className="gradient-text">Team</span>
+            Join Our <span className="gradient-text">Movement</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Be part of a mission to revolutionize premium shopping through
-            personalized service and exceptional products.
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
+            Be part of Scorpio × Indian Innovators of Technology for Next Gen
+          </p>
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+            Help us empower students, professionals, and institutions through premium yet affordable 
+            clothing solutions that make first impressions count.
           </p>
         </div>
       </section>
 
-      {/* Why Work With Us */}
+      {/* Mission Section */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-6">Why Scorpio?</h2>
+            <h2 className="text-3xl font-bold mb-6">Our Mission</h2>
+            <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+              Scorpio is more than a clothing brand; it's a movement for identity and confidence. 
+              Backed by Indian Innovators of Technology for Next Gen, we're building something 
+              that makes a real impact on how people present themselves professionally.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center p-6 rounded-2xl bg-card border border-border">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <GraduationCap className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Student Impact</h3>
+              <p className="text-muted-foreground">
+                Help students across IITs and colleges suit up for placements, internships, and conferences with confidence.
+              </p>
+            </div>
+            
+            <div className="text-center p-6 rounded-2xl bg-card border border-border">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Building className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Institutional Partnerships</h3>
+              <p className="text-muted-foreground">
+                Build meaningful relationships with educational institutions and corporations for uniform and branding solutions.
+              </p>
+            </div>
+            
+            <div className="text-center p-6 rounded-2xl bg-card border border-border">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Shirt className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Quality & Innovation</h3>
+              <p className="text-muted-foreground">
+                Create sustainable, comfortable, and stylish professional wear that balances affordability with premium quality.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Work With Us */}
+      <section className="py-16 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold mb-6">Why Join Scorpio?</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              We're building something special, and we want passionate people to
-              join us on this journey.
+              Be part of a trusted brand backed by IITNxt, making real impact in the lives of students and professionals.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {benefits.map((benefit, index) => (
-              <div key={index} className="text-center">
+              <div key={index} className="text-center p-6">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <benefit.icon className="w-8 h-8 text-primary" />
                 </div>
@@ -105,12 +192,12 @@ export default function Careers() {
       </section>
 
       {/* Open Positions */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold mb-6">Open Positions</h2>
             <p className="text-xl text-muted-foreground">
-              Currently looking for talented individuals to join our team.
+              Join us in building the future of professional clothing and personal branding.
             </p>
           </div>
 
@@ -154,8 +241,9 @@ export default function Careers() {
               Don't See a Perfect Match?
             </h3>
             <p className="text-muted-foreground mb-6">
-              We're always looking for exceptional talent. Send us your resume
-              and let us know how you'd like to contribute.
+              We're always looking for exceptional talent who share our vision of empowering 
+              people through professional clothing. Send us your profile and let us know how 
+              you'd like to contribute to Scorpio's mission.
             </p>
             <Button
               onClick={openWhatsApp}

@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 import {
-  ShoppingBag,
   MessageCircle,
   Instagram,
   Facebook,
@@ -47,7 +46,11 @@ export default function Footer() {
             {/* Brand section */}
             <div className="lg:col-span-2">
               <div className="flex items-center space-x-2 mb-6">
-                <ShoppingBag className="h-8 w-8 text-primary" />
+                <img 
+                  src="/logo.png" 
+                  alt="Scorpio Logo" 
+                  className="h-8 w-8 object-contain" 
+                />
                 <span className="text-2xl font-bold text-primary">Scorpio</span>
               </div>
 

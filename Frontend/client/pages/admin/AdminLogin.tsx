@@ -1,4 +1,4 @@
-import { Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -51,12 +51,16 @@ export default function AdminLogin() {
       <div className="w-full max-w-md">
         <Card className="border border-gray-200 dark:border-gray-800 shadow-lg bg-white dark:bg-gray-800">
           <CardHeader className="text-center space-y-4">
-            <div className="mx-auto w-16 h-16 bg-gray-900 dark:bg-white rounded-2xl flex items-center justify-center">
-              <ShieldCheck className="w-8 h-8 text-white dark:text-gray-900" />
+            <div className="mx-auto w-16 h-16 flex items-center justify-center">
+              <img 
+                src="/logo.png" 
+                alt="Scorpio Logo" 
+                className="w-16 h-16 object-contain" 
+              />
             </div>
             <div>
               <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">
-                Admin Portal
+                Scorpio Admin
               </CardTitle>
               <CardDescription className="text-gray-600 dark:text-gray-400">
                 Access the store administration
