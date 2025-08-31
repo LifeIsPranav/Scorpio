@@ -1,16 +1,16 @@
-import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Search, HelpCircle, Phone, Mail } from "lucide-react";
+import Navigation from "@/components/Navigation";
+import { HelpCircle, Mail, MessageCircle, Phone, Search } from "lucide-react";
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 export default function HelpCenter() {
   const [searchQuery, setSearchQuery] = useState("");
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
 
   const openWhatsApp = () => {
-    const phoneNumber = "+1234567890";
+    const phoneNumber = import.meta.env.VITE_WHATSAPP_PHONE;
     const message = "Hi! I need help with something.";
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
@@ -152,8 +152,8 @@ export default function HelpCenter() {
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-card rounded-2xl p-8 border border-border text-center">
-              <div className="w-16 h-16 bg-green-600/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MessageCircle className="w-8 h-8 text-green-600" />
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <MessageCircle className="w-8 h-8 text-primary" />
               </div>
               <h3 className="text-xl font-semibold mb-4">WhatsApp Support</h3>
               <p className="text-muted-foreground mb-6">
@@ -162,15 +162,15 @@ export default function HelpCenter() {
               </p>
               <Button
                 onClick={openWhatsApp}
-                className="bg-green-600 hover:bg-green-700 rounded-full"
+                className="bg-foreground hover:bg-foreground/90 text-background rounded-full"
               >
                 Chat Now
               </Button>
             </div>
 
             <div className="bg-card rounded-2xl p-8 border border-border text-center">
-              <div className="w-16 h-16 bg-blue-600/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Phone className="w-8 h-8 text-blue-600" />
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Phone className="w-8 h-8 text-primary" />
               </div>
               <h3 className="text-xl font-semibold mb-4">Phone Support</h3>
               <p className="text-muted-foreground mb-6">
@@ -178,16 +178,17 @@ export default function HelpCenter() {
                 queries.
               </p>
               <Button
-                onClick={() => window.open("tel:+1234567890")}
-                className="bg-blue-600 hover:bg-blue-700 rounded-full"
+                onClick={() => window.open(`tel:${import.meta.env.VITE_WHATSAPP_PHONE}`)}
+                // variant="outline"
+                className="bg-foreground hover:bg-foreground/90 text-background rounded-full"
               >
                 Call Us
               </Button>
             </div>
 
             <div className="bg-card rounded-2xl p-8 border border-border text-center">
-              <div className="w-16 h-16 bg-purple-600/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Mail className="w-8 h-8 text-purple-600" />
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Mail className="w-8 h-8 text-primary" />
               </div>
               <h3 className="text-xl font-semibold mb-4">Email Support</h3>
               <p className="text-muted-foreground mb-6">
@@ -196,7 +197,8 @@ export default function HelpCenter() {
               </p>
               <Button
                 onClick={() => window.open("mailto:help@scorpio.com")}
-                className="bg-purple-600 hover:bg-purple-700 rounded-full"
+                // variant="outline"
+                className="bg-foreground hover:bg-foreground/90 text-background rounded-full"
               >
                 Email Us
               </Button>
@@ -299,7 +301,7 @@ export default function HelpCenter() {
           </p>
           <Button
             onClick={openWhatsApp}
-            className="bg-foreground hover:bg-foreground/90 rounded-full"
+            className="bg-foreground hover:bg-foreground/90 text-background rounded-full"
           >
             <MessageCircle className="w-4 h-4 mr-2" />
             Contact Support
