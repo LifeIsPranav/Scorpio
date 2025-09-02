@@ -36,6 +36,9 @@ initializeApp().catch(err => {
 
 const app = express();
 
+// Trust proxy when behind reverse proxy (for services like Render, Heroku, etc.)
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet());
 
