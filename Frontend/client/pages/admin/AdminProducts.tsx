@@ -246,6 +246,22 @@ export default function AdminProducts() {
     }
   };
 
+  const handleToggleFeatured = async (product: Product) => {
+    try {
+      const response = await adminProductsApi.update(product._id, {
+        ...product,
+        featured: !product.featured
+      }) as any;
+      if (response.success) {
+        // Refresh products to show updated data
+        fetchProducts();
+      }
+    } catch (err) {
+      console.error('Error updating product:', err);
+      setError('Failed to update product');
+    }
+  };
+
   const getCategoryName = (categorySlug: string) => {
     const category = categories.find((cat) => cat.slug === categorySlug);
     return category?.name || categorySlug;
@@ -484,6 +500,14 @@ export default function AdminProducts() {
                           >
                             <Edit className="mr-2 h-4 w-4" />
                             Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleToggleFeatured(product)}
+                          >
+                            <Star className="mr-2 h-4 w-4" />
+                            {product.featured
+                              ? "Remove from Featured"
+                              : "Add to Featured"}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleTogglePremium(product)}
