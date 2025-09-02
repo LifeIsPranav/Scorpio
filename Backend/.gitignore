@@ -49,3 +49,6 @@ temp/
 
 # Test files
 test-results/
+
+# Scripts
+src/scripts/seed*

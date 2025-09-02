@@ -118,8 +118,7 @@ const orderSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index for efficient queries
-orderSchema.index({ orderNumber: 1 });
+// Index for efficient queries (remove orderNumber since it's already unique)
 orderSchema.index({ customerPhone: 1 });
 orderSchema.index({ status: 1 });
 orderSchema.index({ createdAt: -1 });

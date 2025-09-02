@@ -211,13 +211,12 @@ const productSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Indexes for better performance
+// Indexes for better performance (keep non-unique indexes)
 productSchema.index({ name: 'text', description: 'text', tags: 'text' });
 productSchema.index({ category: 1, isActive: 1 });
 productSchema.index({ featured: 1, isActive: 1 });
 productSchema.index({ premium: 1, isActive: 1 });
 productSchema.index({ custom: 1, isActive: 1 });
-productSchema.index({ slug: 1 });
 productSchema.index({ priceNumeric: 1 });
 productSchema.index({ createdAt: -1 });
 

@@ -51,7 +51,7 @@ const getCustomProducts = asyncHandler(async (req, res) => {
 const getPublicProducts = asyncHandler(async (req, res) => {
   const {
     page = 1,
-    limit = 12,
+    limit = 100, // Increased default limit to show more products
     category,
     search,
     featured,

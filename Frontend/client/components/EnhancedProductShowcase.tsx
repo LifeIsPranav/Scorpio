@@ -64,6 +64,7 @@ export default function EnhancedProductShowcase({ isHomepage = false }: ProductS
   const [sortBy, setSortBy] = useState<string>("default");
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   
   // Filter state
   const [filters, setFilters] = useState<Filters>({
@@ -216,9 +217,9 @@ export default function EnhancedProductShowcase({ isHomepage = false }: ProductS
       const productsToShow = Math.min(currentPage * PRODUCTS_PER_PAGE, MAX_HOMEPAGE_PRODUCTS);
       return filteredProducts.slice(0, productsToShow);
     } else {
-      const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
-      const endIndex = startIndex + PRODUCTS_PER_PAGE;
-      return filteredProducts.slice(startIndex, endIndex);
+      // For products page: accumulate products (show all from page 1 to current page)
+      const endIndex = currentPage * PRODUCTS_PER_PAGE;
+      return filteredProducts.slice(0, endIndex);
     }
   };
 
@@ -229,7 +230,29 @@ export default function EnhancedProductShowcase({ isHomepage = false }: ProductS
     : currentPage < totalPages;
 
   const handleLoadMore = () => {
+    setLoadingMore(true);
+    const currentProductCount = displayedProducts.length;
     setCurrentPage(prev => prev + 1);
+    
+    // Scroll to the newly loaded products after a short delay
+    if (!isHomepage) {
+      setTimeout(() => {
+        const productGrid = document.querySelector('[data-products-grid]');
+        if (productGrid) {
+          const newProducts = productGrid.children[currentProductCount];
+          if (newProducts) {
+            newProducts.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'start',
+              inline: 'nearest'
+            });
+          }
+        }
+        setLoadingMore(false);
+      }, 300);
+    } else {
+      setTimeout(() => setLoadingMore(false), 300);
+    }
   };
 
   const handleFilterChange = (key: keyof Filters, value: any) => {
@@ -514,11 +537,14 @@ export default function EnhancedProductShowcase({ isHomepage = false }: ProductS
             )}
           </div>
         ) : (
-          <div className={cn(
-            viewMode === "grid" 
-              ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-              : "space-y-4"
-          )}>
+          <div 
+            data-products-grid
+            className={cn(
+              viewMode === "grid" 
+                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                : "space-y-4"
+            )}
+          >
             {displayedProducts.map((product) => (
               <ProductCard 
                 key={product._id} 
@@ -531,8 +557,13 @@ export default function EnhancedProductShowcase({ isHomepage = false }: ProductS
         {/* Load More / Pagination */}
         {hasMore && (
           <div className="text-center mt-12">
-            <Button onClick={handleLoadMore} size="lg" variant="outline">
-              {isHomepage ? "Load More Products" : "Load More"}
+            <Button 
+              onClick={handleLoadMore} 
+              size="lg" 
+              variant="outline"
+              disabled={loadingMore}
+            >
+              {loadingMore ? "Loading..." : (isHomepage ? "Load More Products" : "Load More")}
             </Button>
           </div>
         )}

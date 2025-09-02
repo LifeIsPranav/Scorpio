@@ -57,11 +57,6 @@ const categorySchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Indexes for better performance
-categorySchema.index({ name: 1 });
-categorySchema.index({ slug: 1 });
-categorySchema.index({ isActive: 1, order: 1 });
-
 // Virtual for id (to maintain frontend compatibility)
 categorySchema.virtual('id').get(function() {
   return this.slug;

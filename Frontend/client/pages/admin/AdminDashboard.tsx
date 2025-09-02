@@ -74,13 +74,16 @@ export default function AdminDashboard() {
       const reviews = Array.isArray((reviewsRes as any)?.data) ? (reviewsRes as any).data : 
                      Array.isArray(reviewsRes) ? reviewsRes : [];
 
+      // Get actual total count from pagination metadata
+      const totalProductsCount = (productsRes as any)?.pagination?.total || products.length;
+
       // Calculate revenue from orders
       const totalRevenue = orders.reduce((sum: number, order: any) => {
         return sum + (order.totalAmount || 0);
       }, 0);
 
       setStats({
-        totalProducts: products.length,
+        totalProducts: totalProductsCount,
         totalCategories: categories.length,
         totalOrders: orders.length,
         totalRevenue,
