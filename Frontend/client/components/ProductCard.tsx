@@ -121,11 +121,11 @@ export default function ProductCard({ product, showCustomBadge = false }: Produc
                 Premium
               </Badge>
             )}
-            {(product.custom || showCustomBadge) && (
+            {/* {(product.custom || showCustomBadge) && (
               <Badge className="">
                 Customizable
               </Badge>
-            )}
+            )} */}
           </div>
         </div>
       </Link>
