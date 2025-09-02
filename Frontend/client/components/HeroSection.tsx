@@ -48,7 +48,7 @@ export default function HeroSection() {
           {/* Subtitle */}
           <p className="text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto mb-8 leading-relaxed">
             Explore our curated collection of premium products. Connect directly
-            via WhatsApp to discuss, negotiate, and make your perfect purchase.
+            to discuss, negotiate, and make your perfect purchase.
           </p>
 
           {/* CTA Buttons */}
@@ -80,8 +80,8 @@ export default function HeroSection() {
         <div className="mt-16 animate-slide-up">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             {[
-              { number: "500+", label: "Premium Products" },
-              { number: "50+", label: "Categories" },
+              { number: "50+", label: "Premium Products" },
+              { number: "8+", label: "Categories" },
               { number: "1000+", label: "Happy Customers" },
               { number: "24/7", label: "WhatsApp Support" },
             ].map((stat, index) => (

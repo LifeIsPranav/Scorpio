@@ -111,7 +111,7 @@ export default function PremiumShowcase() {
         {/* Section Header */}
         <ScrollReveal className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Premium <span className="gradient-text">Collection</span>
+            Our <span className="gradient-text">Premium</span> Collection
           </h2>
           {/* <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Discover our handpicked selection of premium products, carefully
