@@ -30,6 +30,9 @@ export default function ProductCard({ product, showCustomBadge = false }: Produc
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
+  // Debug: Log the product data to check slug
+  console.log('ProductCard received product:', { name: product.name, slug: product.slug, _id: product._id });
+
   const openWhatsApp = () => {
     const phoneNumber = import.meta.env.VITE_WHATSAPP_PHONE;
     const message = `Hi! I'm interested in ${product.name}. Can you provide more information?`;

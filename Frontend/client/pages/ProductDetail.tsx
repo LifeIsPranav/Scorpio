@@ -228,6 +228,12 @@ export default function ProductDetail() {
       const foundProduct = result.data.product;
       const relatedProducts = result.data.relatedProducts || [];
       
+      // Debug: Log related products to check if slug is present
+      console.log('Related products received:', relatedProducts);
+      relatedProducts.forEach((rp, index) => {
+        console.log(`Related product ${index}:`, { name: rp.name, slug: rp.slug, _id: rp._id });
+      });
+      
       setProduct(foundProduct);
       setRelatedProducts(relatedProducts);
       setCurrentImageIndex(0);

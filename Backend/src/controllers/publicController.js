@@ -193,7 +193,7 @@ const getPublicProduct = asyncHandler(async (req, res) => {
     _id: { $ne: product._id }
   })
     .limit(4)
-    .select('name price images category featured premium')
+    .select('name slug price images category featured premium description priceNumeric tags custom')
     .sort({ featured: -1, createdAt: -1 });
 
   res.status(200).json({
@@ -349,7 +349,7 @@ const searchProducts = asyncHandler(async (req, res) => {
     ]
   })
     .limit(limitNum)
-    .select('name price images category featured premium')
+    .select('name slug price images category featured premium description priceNumeric tags custom')
     .sort({ featured: -1, views: -1, createdAt: -1 });
 
   // Search categories
@@ -399,7 +399,7 @@ const getHomepageData = asyncHandler(async (req, res) => {
   const latestProducts = await Product.find({ isActive: true })
     .sort({ createdAt: -1 })
     .limit(8)
-    .select('name price images category featured premium');
+    .select('name slug price images category featured premium description priceNumeric tags custom');
 
   res.status(200).json({
     success: true,
