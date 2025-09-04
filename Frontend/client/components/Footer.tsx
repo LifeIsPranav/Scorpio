@@ -55,7 +55,7 @@ export default function Footer() {
                     target.style.display = 'none';
                   }}
                 />
-                <span className="text-2xl font-bold text-primary">Scorpio</span>
+                <span className="text-2xl font-bold text-primary">The Scorpio</span>
               </div>
 
               <p className="text-muted-foreground mb-6 max-w-md">

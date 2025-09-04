@@ -20,6 +20,7 @@ import ProductDetail from "./pages/ProductDetail";
 import Products from "./pages/Products";
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
 import Returns from "./pages/Returns";
+import ScrollToTop from "./components/ScrollToTop";
 import Search from "./pages/Search";
 import ShippingInfo from "./pages/ShippingInfo";
 import SizeGuide from "./pages/SizeGuide";
@@ -42,6 +43,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/products" element={<Products />} />

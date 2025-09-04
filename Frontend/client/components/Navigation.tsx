@@ -41,7 +41,7 @@ export default function Navigation() {
                 target.style.display = 'none';
               }}
             />
-            <span className="text-xl font-bold text-primary">Scorpio</span>
+            <span className="text-xl font-bold text-primary">The Scorpio</span>
           </Link>
 
           {/* Desktop Navigation */}
