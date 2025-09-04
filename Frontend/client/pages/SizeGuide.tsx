@@ -3,6 +3,12 @@ import Navigation from "@/components/Navigation";
 import { MessageCircle, Ruler, Shirt, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+// Import size chart images
+import TshirtSizeChart from "/TshirtSizeChart.png";
+import SweatShirtSize from "/sweatShirtSize.png";
+import PantSizeGuide from "/PantSizeGuide.webp";
+import BlazerSizeGuide from "/BlazerSizeGuide.webp";
+
 export default function SizeGuide() {
   const openWhatsApp = () => {
     const phoneNumber = "+1234567890";
@@ -134,7 +140,7 @@ export default function SizeGuide() {
               </h3>
               <div className="flex justify-center">
                 <img
-                  src="/TshirtSizeChart.png"
+                  src={TshirtSizeChart}
                   alt="T-shirt Size Chart"
                   className="max-w-full h-auto rounded-lg border border-border"
                   onError={(e) => {
@@ -152,7 +158,7 @@ export default function SizeGuide() {
               </h3>
               <div className="flex justify-center">
                 <img
-                  src="/sweatShirtSize.png"
+                  src={SweatShirtSize}
                   alt="Sweatshirt Size Chart"
                   className="max-w-full h-auto rounded-lg border border-border"
                   onError={(e) => {
@@ -170,7 +176,7 @@ export default function SizeGuide() {
               </h3>
               <div className="flex justify-center">
                 <img
-                  src="/PantSizeGuide.webp"
+                  src={PantSizeGuide}
                   alt="Pant Size Guide"
                   className="max-w-full h-auto rounded-lg border border-border"
                   onError={(e) => {
@@ -188,7 +194,7 @@ export default function SizeGuide() {
               </h3>
               <div className="flex justify-center">
                 <img
-                  src="/BlazerSizeGuide.webp"
+                  src={BlazerSizeGuide}
                   alt="Blazer Size Guide"
                   className="max-w-full h-auto rounded-lg border border-border"
                   onError={(e) => {
