@@ -3,12 +3,6 @@ import Navigation from "@/components/Navigation";
 import { MessageCircle, Ruler, Shirt, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-// Import size chart images
-import TshirtSizeChart from "/TshirtSizeChart.png";
-import SweatShirtSize from "/sweatShirtSize.png";
-import PantSizeGuide from "/PantSizeGuide.webp";
-import BlazerSizeGuide from "/BlazerSizeGuide.webp";
-
 export default function SizeGuide() {
   const openWhatsApp = () => {
     const phoneNumber = "+1234567890";
@@ -140,10 +134,14 @@ export default function SizeGuide() {
               </h3>
               <div className="flex justify-center">
                 <img
-                  src={TshirtSizeChart}
+                  src="/TshirtSizeChart.png"
                   alt="T-shirt Size Chart"
                   className="max-w-full h-auto rounded-lg border border-border"
+                  onLoad={(e) => {
+                    console.log('T-shirt image loaded successfully');
+                  }}
                   onError={(e) => {
+                    console.error('Failed to load T-shirt image');
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'none';
                   }}
@@ -158,10 +156,14 @@ export default function SizeGuide() {
               </h3>
               <div className="flex justify-center">
                 <img
-                  src={SweatShirtSize}
+                  src="/sweatShirtSize.png"
                   alt="Sweatshirt Size Chart"
                   className="max-w-full h-auto rounded-lg border border-border"
+                  onLoad={(e) => {
+                    console.log('Sweatshirt image loaded successfully');
+                  }}
                   onError={(e) => {
+                    console.error('Failed to load Sweatshirt image');
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'none';
                   }}
@@ -176,10 +178,14 @@ export default function SizeGuide() {
               </h3>
               <div className="flex justify-center">
                 <img
-                  src={PantSizeGuide}
+                  src="/PantSizeGuide.webp"
                   alt="Pant Size Guide"
                   className="max-w-full h-auto rounded-lg border border-border"
+                  onLoad={(e) => {
+                    console.log('Pant image loaded successfully');
+                  }}
                   onError={(e) => {
+                    console.error('Failed to load Pant image');
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'none';
                   }}
@@ -194,10 +200,14 @@ export default function SizeGuide() {
               </h3>
               <div className="flex justify-center">
                 <img
-                  src={BlazerSizeGuide}
+                  src="/BlazerSizeGuide.webp"
                   alt="Blazer Size Guide"
                   className="max-w-full h-auto rounded-lg border border-border"
+                  onLoad={(e) => {
+                    console.log('Blazer image loaded successfully');
+                  }}
                   onError={(e) => {
+                    console.error('Failed to load Blazer image');
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'none';
                   }}
