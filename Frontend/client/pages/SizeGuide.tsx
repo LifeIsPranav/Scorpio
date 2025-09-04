@@ -1,7 +1,7 @@
-import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import Navigation from "@/components/Navigation";
+import { MessageCircle, Ruler, Shirt, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Ruler, MessageCircle, User, Shirt } from "lucide-react";
 
 export default function SizeGuide() {
   const openWhatsApp = () => {
@@ -110,6 +110,101 @@ export default function SizeGuide() {
                 <strong>Pro Tip:</strong> Use a flexible measuring tape and have
                 someone help you for the most accurate measurements. Measure
                 over thin, well-fitting undergarments for clothing sizes.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Size Charts */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold mb-6">Size Charts</h2>
+            <p className="text-xl text-muted-foreground">
+              Visual size guides for all our clothing items.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* T-shirt Size Chart */}
+            <div className="bg-card rounded-2xl p-8 border border-border">
+              <h3 className="text-xl font-semibold mb-6 text-center">
+                T-shirt Size Chart
+              </h3>
+              <div className="flex justify-center">
+                <img
+                  src="/TshirtSizeChart.png"
+                  alt="T-shirt Size Chart"
+                  className="max-w-full h-auto rounded-lg border border-border"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Sweatshirt Size Chart */}
+            <div className="bg-card rounded-2xl p-8 border border-border">
+              <h3 className="text-xl font-semibold mb-6 text-center">
+                Sweatshirt Size Chart
+              </h3>
+              <div className="flex justify-center">
+                <img
+                  src="/sweatShirtSize.png"
+                  alt="Sweatshirt Size Chart"
+                  className="max-w-full h-auto rounded-lg border border-border"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Pant Size Chart */}
+            <div className="bg-card rounded-2xl p-8 border border-border">
+              <h3 className="text-xl font-semibold mb-6 text-center">
+                Pant Size Guide
+              </h3>
+              <div className="flex justify-center">
+                <img
+                  src="/PantSizeGuide.webp"
+                  alt="Pant Size Guide"
+                  className="max-w-full h-auto rounded-lg border border-border"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Blazer Size Chart */}
+            <div className="bg-card rounded-2xl p-8 border border-border">
+              <h3 className="text-xl font-semibold mb-6 text-center">
+                Blazer Size Guide
+              </h3>
+              <div className="flex justify-center">
+                <img
+                  src="/BlazerSizeGuide.webp"
+                  alt="Blazer Size Guide"
+                  className="max-w-full h-auto rounded-lg border border-border"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-12">
+            <div className="bg-muted/30 rounded-2xl p-6 max-w-3xl mx-auto">
+              <p className="text-muted-foreground text-sm">
+                <strong>Note:</strong> These size charts are specific to our clothing items. 
+                For other products or if you're between sizes, we recommend contacting us for personalized sizing advice.
               </p>
             </div>
           </div>
